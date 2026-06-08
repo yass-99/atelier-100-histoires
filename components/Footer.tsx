@@ -1,7 +1,12 @@
+"use client";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/ateliers/")) return null;
+
   return (
     <footer className="mt-12 px-4 pb-8">
       <div className="mx-auto w-full max-w-md overflow-hidden rounded-card bg-ink p-7 text-on-ink">

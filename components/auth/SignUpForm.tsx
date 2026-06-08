@@ -77,8 +77,10 @@ export function SignUpForm() {
           required
           autoComplete="new-password"
           minLength={8}
+          aria-describedby="pwd-hint"
           className="field"
         />
+        <p id="pwd-hint" className="mt-1 text-xs text-muted">Au moins 8 caractères.</p>
       </div>
       {/* Cible du widget anti-bot Clerk (Smart CAPTCHA) si l'instance l'exige */}
       <div id="clerk-captcha" />
