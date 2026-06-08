@@ -1,38 +1,54 @@
 import Link from "next/link";
-import { Check, Mail, ArrowRight } from "lucide-react";
-import { Pop, Floaty } from "@/components/motion";
+import { ArrowRight } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
+import { getBooking } from "@/lib/bookings";
+import { getSession } from "@/lib/sessions";
+import { qrDataUrl } from "@/lib/qr";
+import { Pop } from "@/components/motion";
+import { Ticket } from "@/components/Ticket";
+import { SignInIncentive } from "@/components/SignInIncentive";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Réservation confirmée — Atelier des 100 histoires" };
 
-export default function Merci() {
-  return (
-    <main className="screen py-12">
-      <Pop>
-        <div className="relative overflow-hidden rounded-card tone-lime p-7 text-center shadow-lift">
-          <Floaty className="blob -right-10 -top-10 h-40 w-40 bg-magenta/30" />
-          <Floaty className="blob -bottom-12 -left-10 h-40 w-40 bg-brand/40" />
+export default async function Merci({ searchParams }: { searchParams: Promise<{ b?: string }> }) {
+  const { b } = await searchParams;
+  const booking = b ? await getBooking(b) : null;
+  const session = booking ? await getSession(booking.session_id) : null;
 
-          <div className="relative flex flex-col items-center">
-            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-ink text-on-ink shadow-lift">
-              <Check className="h-10 w-10" strokeWidth={2.2} />
-            </span>
-            <h1 className="mt-5 font-display text-3xl">Réservation confirmée&nbsp;!</h1>
-            <p className="mt-2 max-w-xs text-ink/80">
-              Ton paiement est validé et ta place est réservée. À très vite pour écrire ensemble&nbsp;!
-            </p>
-
-            <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white/85 px-4 py-2 text-sm font-bold text-ink">
-              <Mail className="h-4 w-4" strokeWidth={1.8} />
-              Un email de confirmation t&apos;a été envoyé
-            </div>
-
-            <Link href="/" className="btn-primary mt-7 w-full">
-              Découvrir d&apos;autres ateliers
-              <ArrowRight className="h-5 w-5" strokeWidth={1.8} />
-            </Link>
-          </div>
+  // Fallback gracieux (lien direct, booking introuvable…)
+  if (!booking || !session) {
+    return (
+      <main className="screen py-12">
+        <div className="card text-center">
+          <h1 className="font-display text-2xl">Réservation confirmée&nbsp;!</h1>
+          <p className="mt-2 text-muted">Un email de confirmation t&apos;a été envoyé.</p>
+          <Link href="/" className="btn-primary mt-6 w-full">Découvrir d&apos;autres ateliers</Link>
         </div>
+      </main>
+    );
+  }
+
+  const qr = await qrDataUrl(booking.id);
+
+  let signedIn = false;
+  try {
+    const { userId } = await auth();
+    signedIn = !!userId;
+  } catch {
+    signedIn = false; // wiring Clerk côté serveur indéterminé → défaut anonyme
+  }
+
+  return (
+    <main className="screen py-8 pb-12">
+      <Pop>
+        <Ticket b={booking} s={session} qr={qr} />
       </Pop>
+      <SignInIncentive signedIn={signedIn} email={booking.email} />
+      <Link href="/" className="btn-ghost mt-4 w-full justify-between">
+        Découvrir d&apos;autres ateliers
+        <span className="arrow-fab h-10 w-10"><ArrowRight className="h-5 w-5" strokeWidth={1.8} /></span>
+      </Link>
     </main>
   );
 }
