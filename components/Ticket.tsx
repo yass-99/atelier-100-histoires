@@ -19,11 +19,15 @@ export function Ticket({ b, s, qr }: { b: Booking; s: Session; qr: string }) {
 
   return (
     <div className="ticket">
-      <div className="relative h-36 overflow-hidden rounded-2xl bg-white/20">
-        {s.image_url && <Image src={s.image_url} alt="" fill sizes="100vw" className="object-cover" />}
+      <div className="relative flex h-36 items-center justify-center overflow-hidden rounded-2xl bg-white/15">
+        {s.image_url ? (
+          <Image src={s.image_url} alt={s.titre} fill sizes="100vw" className="object-cover" />
+        ) : (
+          <p className="px-4 text-center font-display text-lg font-extrabold text-white/90">{s.titre}</p>
+        )}
       </div>
       <p className="mt-4 text-[11px] font-bold uppercase tracking-wide text-white/70">Atelier des 100 histoires</p>
-      <h1 className="mt-1 font-display text-2xl leading-tight">{s.titre}</h1>
+      <h2 className="mt-1 font-display text-2xl leading-tight">{s.titre}</h2>
 
       <div className="mt-4 grid grid-cols-2 gap-4">
         <Field label="Date" value={jour} />

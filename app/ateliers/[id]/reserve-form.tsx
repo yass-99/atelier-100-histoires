@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { Minus, Plus, Loader2, Lock } from "lucide-react";
 import { formatEUR } from "@/lib/money";
 
 export function ReserveForm({
-  sessionId, max, prixCents,
+  sessionId, max, prixCents, defaultEmail = "",
 }: {
-  sessionId: string; max: number; prixCents: number;
+  sessionId: string; max: number; prixCents: number; defaultEmail?: string;
 }) {
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -60,7 +61,7 @@ export function ReserveForm({
 
         <div>
           <label className="field-label" htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" required inputMode="email" autoComplete="email" placeholder="pour recevoir ta confirmation" className="field" />
+          <input id="email" name="email" type="email" required inputMode="email" autoComplete="email" placeholder="pour recevoir ta confirmation" defaultValue={defaultEmail} className="field" />
         </div>
 
         <div>
@@ -69,12 +70,13 @@ export function ReserveForm({
             <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1} aria-label="Retirer une place" className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface text-foreground shadow-soft transition active:scale-95 disabled:opacity-40">
               <Minus className="h-5 w-5" strokeWidth={2} />
             </button>
-            <span className="font-display text-2xl font-extrabold tabular-nums" aria-live="polite">{qty}</span>
+            <span className="font-display text-2xl font-extrabold tabular-nums" aria-live="polite" role="spinbutton" aria-valuemin={1} aria-valuemax={max} aria-valuenow={qty} aria-label="Nombre de places">{qty}</span>
             <button type="button" onClick={() => setQty((q) => Math.min(max, q + 1))} disabled={qty >= max} aria-label="Ajouter une place" className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface text-foreground shadow-soft transition active:scale-95 disabled:opacity-40">
               <Plus className="h-5 w-5" strokeWidth={2} />
             </button>
           </div>
-          <p className="mt-1.5 text-xs text-muted">{max} place{max > 1 ? "s" : ""} disponible{max > 1 ? "s" : ""}</p>
+          <p className="mt-1.5 text-xs text-muted">{max} place{max > 1 ? "s" : ""} restante{max > 1 ? "s" : ""}</p>
+          <p className="mt-2 text-sm font-bold">{qty} place{qty > 1 ? "s" : ""} × {formatEUR(prixCents)} = <span className="text-brand-ink">{formatEUR(total)}</span></p>
         </div>
 
         {error && (
@@ -84,10 +86,11 @@ export function ReserveForm({
 
       {/* CTA collant */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/90 backdrop-blur">
-        <div className="screen py-3">
+        <div className="screen py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <button className="btn-primary h-14 w-full" disabled={loading}>
-            {loading ? (<><Loader2 className="h-5 w-5 animate-spin" /> Redirection…</>) : (<><Lock className="h-4 w-4" strokeWidth={1.8} /> Payer {formatEUR(total)}</>)}
+            {loading ? (<><Loader2 className="h-5 w-5 animate-spin" /> Accès au paiement sécurisé…</>) : (<><Lock className="h-4 w-4" strokeWidth={1.8} /> Payer {formatEUR(total)}</>)}
           </button>
+          <p className="mt-2 text-center text-xs text-muted">Paiement sécurisé Stripe · <Link href="/cgv" className="underline">CGV</Link></p>
         </div>
       </div>
     </form>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { auth } from "@clerk/nextjs/server";
 import { getBooking } from "@/lib/bookings";
 import { getSession } from "@/lib/sessions";
@@ -41,6 +41,12 @@ export default async function Merci({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <main className="screen py-8 pb-12">
+      <div className="mb-5 flex flex-col items-center text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success/15 text-success">
+          <Check className="h-7 w-7" strokeWidth={2.4} aria-hidden />
+        </span>
+        <h1 className="mt-3 font-display text-2xl">Réservation confirmée&nbsp;!</h1>
+      </div>
       <Pop>
         <Ticket b={booking} s={session} qr={qr} />
       </Pop>

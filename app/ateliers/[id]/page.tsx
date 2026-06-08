@@ -5,7 +5,7 @@ import { ArrowLeft, Clock, Users, MapPin, ArrowRight } from "lucide-react";
 import { getSession } from "@/lib/sessions";
 import { placesRestantes } from "@/lib/sessions.shared";
 import { formatEUR } from "@/lib/money";
-import { formatDateLong, dayNumber, monthShort, formatDuree } from "@/lib/ui";
+import { formatDateLong, dayNumber, monthShort, formatDuree, capitalizeFirst } from "@/lib/ui";
 import { Reveal, Floaty } from "@/components/motion";
 import { CircleButton } from "@/components/CircleButton";
 import { ShareButton } from "@/components/ShareButton";
@@ -53,7 +53,7 @@ export default async function AtelierPage({ params }: { params: Promise<{ id: st
               {complet ? "Complet" : `${restantes} place${restantes > 1 ? "s" : ""} restante${restantes > 1 ? "s" : ""}`}
             </p>
             <h1 className="mt-1 font-display text-[28px] leading-[1.1]">{s.titre}</h1>
-            <p className="mt-1.5 capitalize text-muted">{formatDateLong(s.date_heure)}</p>
+            <p className="mt-1.5 text-muted">{capitalizeFirst(formatDateLong(s.date_heure))}</p>
           </div>
           <div className="date-badge h-14 w-14">
             <span className="font-display text-xl font-extrabold text-ink">{dayNumber(s.date_heure)}</span>
@@ -77,13 +77,13 @@ export default async function AtelierPage({ params }: { params: Promise<{ id: st
 
       {/* CTA collant */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/90 backdrop-blur">
-        <div className="screen py-3">
+        <div className="screen py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           {complet ? (
             <Link href="/" className="btn-ghost w-full">Voir les autres ateliers</Link>
           ) : (
             <Link href={`/ateliers/${s.id}/reserver`} className="btn-primary h-14 w-full justify-between">
-              <span>Réserver — {formatEUR(s.prix_cents)} / place</span>
-              <span className="arrow-fab h-10 w-10 bg-white text-ink">
+              <span className="min-w-0 flex-1 truncate text-left">Réserver — {formatEUR(s.prix_cents)} / place</span>
+              <span className="arrow-fab shrink-0 h-10 w-10 bg-white text-ink">
                 <ArrowRight className="h-5 w-5" strokeWidth={1.8} />
               </span>
             </Link>
