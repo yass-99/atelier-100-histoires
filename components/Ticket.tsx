@@ -19,11 +19,11 @@ export function Ticket({ b, s, qr }: { b: Booking; s: Session; qr: string }) {
 
   return (
     <div className="ticket">
-      <div className="relative flex h-36 items-center justify-center overflow-hidden rounded-2xl bg-white/15">
+      <div className="relative flex h-24 items-center justify-center overflow-hidden rounded-2xl bg-white/15">
         {s.image_url ? (
           <Image src={s.image_url} alt={s.titre} fill sizes="100vw" className="object-cover" />
         ) : (
-          <p className="px-4 text-center font-display text-lg font-extrabold text-white/90">{s.titre}</p>
+          <p className="px-4 text-center font-display text-base font-extrabold text-white/90">{s.titre}</p>
         )}
       </div>
       <p className="mt-4 text-[11px] font-bold uppercase tracking-wide text-white/70">Atelier des 100 histoires</p>
@@ -44,8 +44,8 @@ export function Ticket({ b, s, qr }: { b: Booking; s: Session; qr: string }) {
       </div>
 
       <div className="flex items-center justify-center">
-        <div className="rounded-2xl bg-white p-3">
-          <Image src={qr} alt={`QR de la réservation ${ref}`} width={140} height={140} unoptimized />
+        <div className="rounded-2xl bg-white p-2.5">
+          <Image src={qr} alt={`QR de la réservation ${ref}`} width={116} height={116} unoptimized />
         </div>
       </div>
     </div>
