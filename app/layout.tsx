@@ -1,4 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
+import { frFR } from "@clerk/localizations";
 import type { Metadata, Viewport } from "next";
 import { Nunito, DM_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
@@ -20,7 +21,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Atelier des 100 histoires",
+  title: "Atelier aux 100 histoires",
   description: "Réservez votre place à nos ateliers d'écriture et de récit.",
 };
 
@@ -37,7 +38,7 @@ export default function RootLayout({
       className={`${nunito.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="min-h-dvh flex flex-col">
-        <ClerkProvider appearance={clerkAppearance}>
+        <ClerkProvider localization={frFR} appearance={clerkAppearance}>
           <MotionProvider>
             <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-on-ink focus:font-bold">Aller au contenu principal</a>
             <Header />

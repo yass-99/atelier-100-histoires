@@ -45,6 +45,8 @@ export const clerkAppearance = {
       "rounded-2xl font-semibold text-foreground hover:bg-background",
     userButtonPopoverActionButtonIcon: "text-muted",
     userButtonPopoverActionButtonText: "font-semibold",
-    userButtonPopoverFooter: "border-t border-border bg-surface",
+    /* On masque le branding « Secured by Clerk » pour un menu 100 % app.
+       Modificateur important (Tailwind v4) pour battre le CSS interne de Clerk. */
+    userButtonPopoverFooter: "hidden!",
   },
 } as const;
