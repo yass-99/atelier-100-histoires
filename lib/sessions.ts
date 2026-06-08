@@ -25,6 +25,5 @@ export async function getSession(id: string): Promise<Session | null> {
   return data as Session | null;
 }
 
-export function placesRestantes(s: Session): number {
-  return Math.max(0, s.capacite - s.places_reservees);
-}
+// Re-export pure helper so server components can still import from here.
+export { placesRestantes } from "./sessions.shared";

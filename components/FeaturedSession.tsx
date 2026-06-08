@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, MapPin, Users, ArrowRight } from "lucide-react";
 import type { Session } from "@/lib/types";
-import { placesRestantes } from "@/lib/sessions";
+import { placesRestantes } from "@/lib/sessions.shared";
 import { formatEUR } from "@/lib/money";
 import { formatDateLong, dayNumber, monthShort } from "@/lib/ui";
 import { Floaty } from "@/components/motion";
