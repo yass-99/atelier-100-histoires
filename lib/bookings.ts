@@ -74,3 +74,14 @@ export async function cancelBooking(stripeSessionId: string): Promise<Booking | 
   if (error) throw error;
   return data as Booking | null;
 }
+
+export async function getBooking(id: string): Promise<Booking | null> {
+  const db = createAdminClient();
+  const { data, error } = await db
+    .from("bookings")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data as Booking | null;
+}
