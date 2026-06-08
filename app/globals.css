@@ -2,51 +2,50 @@
 
 /* ============================================================
    Atelier des 100 histoires — Design system
-   Palette vive & ludique tirée de la référence (lavande /
-   bleuet / magenta / ambre / lime / pilules noires).
-   Mobile-first. Les tokens génèrent les utilitaires Tailwind :
-   bg-brand, text-ink, rounded-card, shadow-card, font-display…
+   Direction : éditorial, épuré, fort contraste (noir + off-white),
+   aplats de couleur (AUCUN dégradé), aucun décor « blob ».
+   Mobile-first. Une action claire par écran.
    ============================================================ */
 
 @theme {
   /* ---- Couleurs : surfaces & texte ---- */
-  --color-background: #eef1fc;   /* fond d'app, lavande très clair */
-  --color-lavender: #c9d6f7;     /* lavande soutenu (cartes, accents) */
+  --color-background: #fafafa;   /* off-white neutre */
+  --color-lavender: #c9d6f7;     /* accent lavande (aplat) */
   --color-surface: #ffffff;      /* cartes blanches */
-  --color-foreground: #14141b;   /* texte principal */
-  --color-muted: #54586a;        /* texte secondaire */
-  --color-border: #e7eaf6;       /* bordures / séparateurs */
+  --color-foreground: #0a0a0b;   /* texte principal quasi noir */
+  --color-muted: #5b5f6b;        /* texte secondaire (≥ AA) */
+  --color-border: #e7e7ea;       /* bordures / séparateurs neutres */
 
-  /* ---- Couleurs : marque & accents (cartes multicolores) ---- */
-  --color-ink: #111114;          /* pilules / CTA principal */
+  /* ---- Couleurs : marque & accents (aplats unis) ---- */
+  --color-ink: #111114;          /* noir d'encre : CTA, emphase */
   --color-on-ink: #ffffff;
-  --color-brand: #7b86ff;        /* périwinkle vif & lumineux (fonds/cartes) */
-  --color-brand-soft: #e4e8ff;   /* bleu pastel très clair */
-  --color-brand-ink: #4f5bd5;    /* périwinkle foncé, lisible en texte sur blanc */
-  --color-magenta: #e24fd8;      /* magenta vif */
-  --color-magenta-soft: #f9d4f2; /* rose pastel */
-  --color-amber: #f6b73c;        /* jaune ambre */
-  --color-amber-soft: #fde6b6;   /* ambre pastel */
-  --color-lime: #c4e759;         /* lime/citron vert */
-  --color-lime-soft: #e7f6bd;    /* lime pastel */
-  --color-orange: #ff7a29;       /* orange (mise en avant) */
+  --color-brand: #7b86ff;        /* périwinkle */
+  --color-brand-soft: #e4e8ff;
+  --color-brand-ink: #4f5bd5;    /* périwinkle foncé lisible sur blanc */
+  --color-magenta: #e24fd8;
+  --color-magenta-soft: #f9d4f2;
+  --color-amber: #f6b73c;
+  --color-amber-soft: #fde6b6;
+  --color-lime: #c4e759;
+  --color-lime-soft: #e7f6bd;
+  --color-orange: #ff7a29;
 
   /* ---- Couleurs : sémantique (statuts) ---- */
   --color-success: #28b67c;
   --color-danger: #e5484d;
 
-  /* ---- Rayons (très arrondi, façon référence) ---- */
+  /* ---- Rayons ---- */
   --radius-sm: 0.625rem;
   --radius-md: 1rem;
   --radius-lg: 1.375rem;
-  --radius-card: 1.875rem;
+  --radius-card: 1.75rem;
   --radius-pill: 9999px;
 
-  /* ---- Ombres douces & colorées ---- */
-  --shadow-soft: 0 6px 20px -8px rgba(28, 39, 89, 0.18);
-  --shadow-card: 0 18px 40px -18px rgba(28, 39, 89, 0.28);
-  --shadow-pop: 0 16px 34px -12px rgba(226, 79, 216, 0.42);
-  --shadow-lift: 0 10px 24px -10px rgba(28, 39, 89, 0.30);
+  /* ---- Ombres sobres (neutres, peu colorées) ---- */
+  --shadow-soft: 0 4px 16px -10px rgba(10, 10, 11, 0.18);
+  --shadow-card: 0 14px 36px -22px rgba(10, 10, 11, 0.24);
+  --shadow-pop: 0 14px 30px -16px rgba(10, 10, 11, 0.30);
+  --shadow-lift: 0 12px 28px -16px rgba(10, 10, 11, 0.28);
 }
 
 /* next/font expose les familles via des variables runtime. */
@@ -93,7 +92,7 @@ h1, h2, h3, h4 {
   .btn-lime    { @apply bg-lime text-ink hover:brightness-105; }
   .btn-ghost   { @apply bg-surface text-foreground border border-border hover:bg-background; }
 
-  /* CTA "flèche" — pilule noire avec rond + flèche, signature de la réf */
+  /* CTA « flèche » — rond noir + flèche */
   .arrow-fab {
     @apply inline-flex h-12 w-12 shrink-0 items-center justify-center
            rounded-full bg-ink text-on-ink transition active:scale-95;
@@ -103,38 +102,23 @@ h1, h2, h3, h4 {
   .card      { @apply bg-surface rounded-card shadow-card p-5; }
   .card-flat { @apply bg-surface rounded-card border border-border p-5; }
 
-  /* Tons multicolores en DÉGRADÉ pour cartes en rotation (façon réf) */
-  .tone-brand {
-    background-image: linear-gradient(150deg, #9aa2ff 0%, #6f7cf7 100%);
-    @apply text-white;
-  }
-  .tone-magenta {
-    background-image: linear-gradient(150deg, #f173e8 0%, #e24fd8 100%);
-    @apply text-white;
-  }
-  .tone-amber {
-    background-image: linear-gradient(150deg, #ffd884 0%, #f6b73c 100%);
-    @apply text-ink;
-  }
-  .tone-lime {
-    background-image: linear-gradient(150deg, #ddf68a 0%, #c4e759 100%);
-    @apply text-ink;
-  }
-  .tone-lavender {
-    background-image: linear-gradient(150deg, #eef1ff 0%, #d4ddfb 100%);
-    @apply text-ink;
-  }
-  .tone-ink { @apply bg-ink text-on-ink; }
+  /* Tons multicolores en APLAT UNI (aucun dégradé) */
+  .tone-brand    { @apply bg-brand text-white; }
+  .tone-magenta  { @apply bg-magenta text-white; }
+  .tone-amber    { @apply bg-amber text-ink; }
+  .tone-lime     { @apply bg-lime text-ink; }
+  .tone-lavender { @apply bg-lavender text-ink; }
+  .tone-ink      { @apply bg-ink text-on-ink; }
 
-  /* Label discret (remplace les pilules) — petit, gras, majuscules */
+  /* Label discret — petit, gras, majuscules */
   .eyebrow {
-    @apply text-xs font-bold uppercase tracking-[0.08em];
+    @apply text-xs font-bold uppercase tracking-[0.12em];
   }
 
-  /* Badge date carré (jour + mois), style réf */
+  /* Badge date carré (jour + mois) */
   .date-badge {
     @apply flex h-12 w-12 shrink-0 flex-col items-center justify-center
-           rounded-2xl bg-white leading-none shadow-soft;
+           rounded-2xl bg-ink text-on-ink leading-none;
   }
 
   /* Pastilles / étiquettes */
@@ -147,58 +131,53 @@ h1, h2, h3, h4 {
            text-xs font-bold;
   }
 
-  /* Champs de formulaire */
+  /* Champs de formulaire (focus noir, éditorial) */
   .field {
     @apply w-full min-h-12 rounded-2xl border border-border bg-surface px-4 py-3
            text-base text-foreground outline-none transition
-           placeholder:text-muted/70
-           focus:border-brand focus:ring-4 focus:ring-brand/20;
+           placeholder:text-muted/60
+           focus:border-ink focus:ring-4 focus:ring-ink/10;
   }
   .field-label { @apply block text-sm font-bold text-foreground mb-1.5; }
 
-  /* Petite ligne d'info avec icône (date, lieu, places…) */
+  /* Petite ligne d'info avec icône */
   .meta-row { @apply flex items-center gap-2 text-sm font-medium; }
 
-  /* Décor : pastille floue colorée en fond */
+  /* Décor flou (déprécié — ne plus utiliser) */
   .blob { @apply pointer-events-none absolute rounded-full blur-2xl; }
 
-  /* Bande haute colorée + feuille blanche qui remonte (motif Image #4) */
-  .hero-band { @apply relative -mx-4 px-4 pb-16; }
-  .sheet { @apply relative -mt-10 rounded-t-[2rem] bg-surface px-4 pt-6; }
+  /* Feuille blanche arrondie qui remonte */
+  .sheet { @apply relative -mt-8 rounded-t-[2rem] bg-surface px-4 pt-6; }
 
-  /* Bouton rond icône (retour / partage) */
+  /* Bouton rond icône (retour / partage) — sobre, bordé */
   .circle-btn {
     @apply inline-flex h-10 w-10 shrink-0 items-center justify-center
-           rounded-full bg-white/90 text-ink shadow-soft backdrop-blur
+           rounded-full bg-surface text-ink border border-border
            transition active:scale-95
-           hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand;
+           hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink;
   }
 
-  /* Pastille de jour (strip horizontal scrollable) */
+  /* Pastille de jour — épurée (sans bordure) : ghost inactif, noir actif */
   .day-pill {
-    @apply flex shrink-0 flex-col items-center justify-center gap-0.5
-           rounded-2xl border border-border bg-surface px-3.5 py-2
-           text-center leading-none transition active:scale-95
-           hover:border-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1;
+    @apply flex shrink-0 flex-col items-center justify-center gap-1
+           rounded-2xl px-4 py-2.5 text-center leading-none text-muted
+           transition active:scale-95
+           hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink;
   }
-  .day-pill[data-active="true"] { @apply border-transparent bg-ink text-on-ink; }
+  .day-pill[data-active="true"] { @apply bg-ink text-on-ink; }
 
-  /* Mini-stat (détail atelier) */
-  .stat-chip {
-    @apply flex flex-1 flex-col items-center gap-1 rounded-2xl
-           border border-border bg-surface px-2 py-3 text-center;
-  }
-
-  /* E-ticket */
+  /* E-ticket — aplat uni (aucun dégradé) */
   .ticket {
-    @apply relative overflow-visible rounded-card p-6 text-white shadow-lift;
-    background-image: linear-gradient(150deg, #9aa2ff 0%, #6f7cf7 100%);
+    @apply relative overflow-visible rounded-card p-6 text-white shadow-lift bg-brand;
   }
-  /* Rangée de perforation : pointillés + encoches demi-cercle des deux côtés */
-  .ticket-perf { @apply relative my-5 h-0; }
+  /* Perforation : tirets espacés + encoches demi-cercle des deux côtés */
+  .ticket-perf { @apply relative my-6 h-0; }
   .ticket-perf::before {
     content: "";
-    @apply absolute left-0 right-0 top-0 border-t-2 border-dashed border-white/45;
+    @apply absolute left-3 right-3 top-0 h-0.5;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.65) 0 8px, transparent 8px 18px);
+    background-size: 18px 2px;
+    background-repeat: repeat-x;
   }
   .ticket-notch {
     @apply absolute top-1/2 h-6 w-6 -translate-y-1/2 rounded-full;
