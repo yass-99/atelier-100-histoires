@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Show, SignInButton, UserButton } from "@clerk/nextjs";
+import { Show, UserButton } from "@clerk/nextjs";
 import { Sparkles } from "lucide-react";
 import { clerkAppearance } from "./clerk-appearance";
 
@@ -18,11 +18,9 @@ export function Header() {
 
         <div className="flex shrink-0 items-center gap-2">
           <Show when="signed-out">
-            <SignInButton mode="modal">
-              <button className="btn-primary min-h-0 px-4 py-2 text-sm">
-                Connexion
-              </button>
-            </SignInButton>
+            <Link href="/sign-in" className="btn-primary min-h-0 px-4 py-2 text-sm">
+              Connexion
+            </Link>
           </Show>
           <Show when="signed-in">
             <UserButton appearance={clerkAppearance} />
