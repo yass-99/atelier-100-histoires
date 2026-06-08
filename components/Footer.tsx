@@ -1,23 +1,16 @@
 "use client";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { Logo } from "./Logo";
 
 export function Footer() {
   const pathname = usePathname();
   if (pathname?.startsWith("/ateliers/")) return null;
 
   return (
-    <footer className="mt-12 px-4 pb-8">
-      <div className="mx-auto w-full max-w-md overflow-hidden rounded-card bg-ink p-7 text-on-ink">
-        <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-lime text-ink">
-            <Sparkles className="h-5 w-5" strokeWidth={1.8} />
-          </span>
-          <p className="font-display text-lg font-extrabold">
-            Atelier des 100 histoires
-          </p>
-        </div>
+    <footer className="w-full bg-ink text-on-ink">
+      <div className="screen py-12">
+        <Logo tone="light" className="text-2xl" />
         <p className="mt-3 text-sm text-on-ink/70">
           Petites histoires. Grandes rencontres.
         </p>
@@ -35,7 +28,7 @@ export function Footer() {
         </nav>
 
         <p className="mt-6 text-xs text-on-ink/50">
-          © {new Date().getFullYear()} Atelier des 100 histoires
+          © {new Date().getFullYear()} Atelier aux 100 histoires
         </p>
       </div>
     </footer>

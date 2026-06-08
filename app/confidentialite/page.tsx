@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export const metadata = { title: "Confidentialité — Atelier des 100 histoires" };
+export const metadata = { title: "Confidentialité — Atelier aux 100 histoires" };
 
 export default function Confidentialite() {
   return (

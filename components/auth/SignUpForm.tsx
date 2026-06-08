@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSignUp } from "@clerk/nextjs";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 
 type ClerkErr = { message?: string; longMessage?: string } | null | undefined;
 const msg = (e: ClerkErr, fallback: string) => e?.longMessage ?? e?.message ?? fallback;
@@ -97,7 +97,7 @@ export function SignUpForm() {
           <p role="alert" aria-live="polite" className="rounded-xl bg-danger/10 px-3 py-2 text-sm font-medium text-danger">{error}</p>
         )}
         <button className="btn-primary h-14 w-full" disabled={loading || !isLoaded}>
-          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Création…</> : "Créer mon compte"}
+          {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Création…</> : <>Créer mon compte <ArrowRight className="h-5 w-5" /></>}
         </button>
         <div className="flex items-center justify-between text-sm">
           <button type="button" onClick={() => { setStep("email"); setError(null); }} className="inline-flex items-center gap-1 font-bold text-muted hover:text-foreground">
@@ -121,7 +121,7 @@ export function SignUpForm() {
         <p role="alert" aria-live="polite" className="rounded-xl bg-danger/10 px-3 py-2 text-sm font-medium text-danger">{error}</p>
       )}
       <button className="btn-primary h-14 w-full" disabled={loading || !isLoaded}>
-        {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Envoi…</> : "Recevoir mon code"}
+        {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Envoi…</> : <>Recevoir mon code <ArrowRight className="h-5 w-5" /></>}
       </button>
     </form>
   );

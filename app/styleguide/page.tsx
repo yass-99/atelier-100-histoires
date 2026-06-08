@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Styleguide — Atelier des 100 histoires",
+  title: "Styleguide — Atelier aux 100 histoires",
 };
 
 const COLORS: { name: string; varName: string; text?: string }[] = [
@@ -33,7 +33,7 @@ export default function StyleguidePage() {
     <main className="screen py-8">
       <p className="chip bg-brand-soft text-ink">Design system</p>
       <h1 className="mt-3 text-3xl leading-tight">
-        Atelier des 100 histoires
+        Atelier aux 100 histoires
       </h1>
       <p className="mt-2 text-muted">
         Aperçu des tokens et composants réutilisables. Mobile-first.
@@ -122,7 +122,7 @@ export default function StyleguidePage() {
       <Section title="Ticket & jours">
         {/* E-ticket */}
         <div className="ticket mx-auto max-w-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-white/70">Atelier des 100 histoires</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-white/70">Atelier aux 100 histoires</p>
           <h3 className="mt-1 text-xl font-extrabold">Écrire sa première histoire</h3>
           <p className="mt-0.5 text-sm text-white/80">Samedi 15 juil. · 14h00 · Paris 11e</p>
 

@@ -23,7 +23,7 @@ export async function sendConfirmation(b: Booking, s: Session) {
         <li>${b.nb_places} place(s) — ${formatEUR(b.montant_cents)}</li>
       </ul>
       <p>À très bientôt !</p>
-      <p>— Atelier des 100 histoires</p>`,
+      <p>— Atelier aux 100 histoires</p>`,
   });
 }
 
