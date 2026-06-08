@@ -1,51 +1,55 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Atelier des 100 histoires — Design tokens
-   Palette tirée de la référence (lavande / bleuet / magenta /
-   ambre / pastels / pilules noires). Mobile-first.
-   Ces tokens génèrent des utilitaires Tailwind : bg-brand,
-   text-ink, rounded-card, shadow-card, font-display, etc.
+   Atelier des 100 histoires — Design system
+   Palette vive & ludique tirée de la référence (lavande /
+   bleuet / magenta / ambre / lime / pilules noires).
+   Mobile-first. Les tokens génèrent les utilitaires Tailwind :
+   bg-brand, text-ink, rounded-card, shadow-card, font-display…
    ============================================================ */
 
 @theme {
   /* ---- Couleurs : surfaces & texte ---- */
-  --color-background: #f1f4fd;   /* fond d'app, lavande très clair */
-  --color-lavender: #c9d6f7;     /* lavande soutenu (sections, accents) */
-  --color-surface: #ffffff;      /* cartes */
-  --color-foreground: #15151b;   /* texte principal */
-  --color-muted: #6f7280;        /* texte secondaire */
-  --color-border: #e9ecf6;       /* bordures / séparateurs */
+  --color-background: #eef1fc;   /* fond d'app, lavande très clair */
+  --color-lavender: #c9d6f7;     /* lavande soutenu (cartes, accents) */
+  --color-surface: #ffffff;      /* cartes blanches */
+  --color-foreground: #14141b;   /* texte principal */
+  --color-muted: #6b6e7e;        /* texte secondaire */
+  --color-border: #e7eaf6;       /* bordures / séparateurs */
 
-  /* ---- Couleurs : marque & accents ---- */
-  --color-ink: #111114;          /* boutons pilule (CTA principal) */
+  /* ---- Couleurs : marque & accents (cartes multicolores) ---- */
+  --color-ink: #111114;          /* pilules / CTA principal */
   --color-on-ink: #ffffff;
-  --color-brand: #7c93f0;        /* bleuet / périwinkle (couleur marque) */
-  --color-brand-soft: #c6d8fa;   /* bleu pastel */
-  --color-magenta: #e24fd8;      /* magenta vif (accent énergique) */
-  --color-magenta-soft: #f3c9e9; /* rose pastel */
-  --color-amber: #f4b63f;        /* jaune ambre */
+  --color-brand: #7b86ff;        /* périwinkle vif & lumineux (fonds/cartes) */
+  --color-brand-soft: #e4e8ff;   /* bleu pastel très clair */
+  --color-brand-ink: #4f5bd5;    /* périwinkle foncé, lisible en texte sur blanc */
+  --color-magenta: #e24fd8;      /* magenta vif */
+  --color-magenta-soft: #f9d4f2; /* rose pastel */
+  --color-amber: #f6b73c;        /* jaune ambre */
+  --color-amber-soft: #fde6b6;   /* ambre pastel */
+  --color-lime: #c4e759;         /* lime/citron vert */
+  --color-lime-soft: #e7f6bd;    /* lime pastel */
   --color-orange: #ff7a29;       /* orange (mise en avant) */
 
   /* ---- Couleurs : sémantique (statuts) ---- */
-  --color-success: #2fb67c;
+  --color-success: #28b67c;
   --color-danger: #e5484d;
 
   /* ---- Rayons (très arrondi, façon référence) ---- */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.25rem;
-  --radius-card: 1.75rem;
+  --radius-sm: 0.625rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.375rem;
+  --radius-card: 1.875rem;
   --radius-pill: 9999px;
 
-  /* ---- Ombres douces ---- */
+  /* ---- Ombres douces & colorées ---- */
   --shadow-soft: 0 6px 20px -8px rgba(28, 39, 89, 0.18);
-  --shadow-card: 0 14px 34px -14px rgba(28, 39, 89, 0.22);
-  --shadow-pop: 0 12px 26px -10px rgba(226, 79, 216, 0.45);
+  --shadow-card: 0 18px 40px -18px rgba(28, 39, 89, 0.28);
+  --shadow-pop: 0 16px 34px -12px rgba(226, 79, 216, 0.42);
+  --shadow-lift: 0 10px 24px -10px rgba(28, 39, 89, 0.30);
 }
 
-/* next/font expose les familles via des variables runtime — on les
-   relie aux tokens de police en mode "inline". */
+/* next/font expose les familles via des variables runtime. */
 @theme inline {
   --font-sans: var(--font-dm-sans);
   --font-display: var(--font-nunito);
@@ -56,46 +60,105 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
 }
 
-/* ---- Classes de composants réutilisables (à "appeler" partout) ---- */
+/* ---- Classes de composants réutilisables ---- */
 @layer components {
-  /* Boutons — base partagée (hauteur mini 44px = cible tactile) */
+  /* Conteneur mobile-first centré */
+  .screen { @apply mx-auto w-full max-w-md px-4; }
+
+  /* Boutons — base partagée (cible tactile ≥ 44px) */
   .btn,
   .btn-primary,
   .btn-brand,
   .btn-accent,
+  .btn-lime,
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 min-h-11 px-5 py-3
-           rounded-full font-semibold text-base transition
-           active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none
-           cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2 min-h-12 px-5 py-3
+           rounded-full font-bold text-base transition
+           active:scale-[.97] disabled:opacity-50 disabled:pointer-events-none
+           cursor-pointer select-none;
   }
-  .btn-primary { @apply bg-ink text-on-ink; }
-  .btn-brand   { @apply bg-brand text-ink; }
-  .btn-accent  { @apply bg-magenta text-white; }
-  .btn-ghost   { @apply bg-surface text-foreground border border-border; }
+  .btn-primary { @apply bg-ink text-on-ink hover:bg-ink/90; }
+  .btn-brand   { @apply bg-brand text-ink hover:brightness-105; }
+  .btn-accent  { @apply bg-magenta text-white hover:brightness-105; }
+  .btn-lime    { @apply bg-lime text-ink hover:brightness-105; }
+  .btn-ghost   { @apply bg-surface text-foreground border border-border hover:bg-background; }
+
+  /* CTA "flèche" — pilule noire avec rond + flèche, signature de la réf */
+  .arrow-fab {
+    @apply inline-flex h-12 w-12 shrink-0 items-center justify-center
+           rounded-full bg-ink text-on-ink transition active:scale-95;
+  }
 
   /* Cartes */
   .card      { @apply bg-surface rounded-card shadow-card p-5; }
   .card-flat { @apply bg-surface rounded-card border border-border p-5; }
 
-  /* Pastilles / étiquettes */
-  .chip {
-    @apply inline-flex items-center gap-1 rounded-full px-3 py-1
-           text-sm font-medium;
+  /* Tons multicolores en DÉGRADÉ pour cartes en rotation (façon réf) */
+  .tone-brand {
+    background-image: linear-gradient(150deg, #9aa2ff 0%, #6f7cf7 100%);
+    @apply text-white;
   }
-  .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5
-           text-xs font-semibold;
+  .tone-magenta {
+    background-image: linear-gradient(150deg, #f173e8 0%, #e24fd8 100%);
+    @apply text-white;
+  }
+  .tone-amber {
+    background-image: linear-gradient(150deg, #ffd884 0%, #f6b73c 100%);
+    @apply text-ink;
+  }
+  .tone-lime {
+    background-image: linear-gradient(150deg, #ddf68a 0%, #c4e759 100%);
+    @apply text-ink;
+  }
+  .tone-lavender {
+    background-image: linear-gradient(150deg, #eef1ff 0%, #d4ddfb 100%);
+    @apply text-ink;
+  }
+  .tone-ink { @apply bg-ink text-on-ink; }
+
+  /* Label discret (remplace les pilules) — petit, gras, majuscules */
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.08em];
   }
 
-  /* Conteneur mobile-first centré */
-  .screen { @apply mx-auto w-full max-w-md px-4; }
+  /* Badge date carré (jour + mois), style réf */
+  .date-badge {
+    @apply flex h-12 w-12 shrink-0 flex-col items-center justify-center
+           rounded-2xl bg-white leading-none shadow-soft;
+  }
+
+  /* Pastilles / étiquettes */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5
+           text-sm font-bold;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1
+           text-xs font-bold;
+  }
+
+  /* Champs de formulaire */
+  .field {
+    @apply w-full min-h-12 rounded-2xl border border-border bg-surface px-4 py-3
+           text-base text-foreground outline-none transition
+           placeholder:text-muted/70
+           focus:border-brand focus:ring-4 focus:ring-brand/20;
+  }
+  .field-label { @apply block text-sm font-bold text-foreground mb-1.5; }
+
+  /* Petite ligne d'info avec icône (date, lieu, places…) */
+  .meta-row { @apply flex items-center gap-2 text-sm font-medium; }
+
+  /* Décor : pastille floue colorée en fond */
+  .blob { @apply pointer-events-none absolute rounded-full blur-2xl; }
 }

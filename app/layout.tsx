@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Nunito, DM_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { MotionProvider } from "@/components/motion";
+import { clerkAppearance } from "@/components/clerk-appearance";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -33,10 +35,12 @@ export default function RootLayout({
       className={`${nunito.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="min-h-dvh flex flex-col">
-        <ClerkProvider>
-          <Header />
-          <div className="flex-1">{children}</div>
-          <Footer />
+        <ClerkProvider appearance={clerkAppearance}>
+          <MotionProvider>
+            <Header />
+            <div className="flex-1">{children}</div>
+            <Footer />
+          </MotionProvider>
         </ClerkProvider>
       </body>
     </html>

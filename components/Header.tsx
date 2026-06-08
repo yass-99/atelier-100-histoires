@@ -1,21 +1,31 @@
 import Link from "next/link";
 import { Show, SignInButton, UserButton } from "@clerk/nextjs";
+import { Sparkles } from "lucide-react";
+import { clerkAppearance } from "./clerk-appearance";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-surface/90 backdrop-blur">
-      <div className="screen flex h-14 items-center justify-between">
-        <Link href="/" className="truncate font-display text-base font-extrabold sm:text-lg">
-          Atelier des 100 histoires
+    <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-md">
+      <div className="screen flex h-16 items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 min-w-0">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-ink text-on-ink">
+            <Sparkles className="h-5 w-5" strokeWidth={1.8} />
+          </span>
+          <span className="truncate font-display text-base font-extrabold leading-tight">
+            Atelier des 100 histoires
+          </span>
         </Link>
-        <div className="flex items-center gap-2">
+
+        <div className="flex shrink-0 items-center gap-2">
           <Show when="signed-out">
-            <SignInButton>
-              <button className="btn-ghost min-h-0 px-3 py-1.5 text-sm">Connexion</button>
+            <SignInButton mode="modal">
+              <button className="btn-primary min-h-0 px-4 py-2 text-sm">
+                Connexion
+              </button>
             </SignInButton>
           </Show>
           <Show when="signed-in">
-            <UserButton />
+            <UserButton appearance={clerkAppearance} />
           </Show>
         </div>
       </div>
