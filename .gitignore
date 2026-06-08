@@ -33,9 +33,19 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# captures & artefacts de test local
+/styleguide-mobile.png
+/accueil-mobile.png
+/detail-mobile.png
+/stripe-checkout.png
+/.playwright-mcp/
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# image de reference d inspiration (local)
+/image.png

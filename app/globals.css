@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   Atelier des 100 histoires — Design tokens
+   Palette tirée de la référence (lavande / bleuet / magenta /
+   ambre / pastels / pilules noires). Mobile-first.
+   Ces tokens génèrent des utilitaires Tailwind : bg-brand,
+   text-ink, rounded-card, shadow-card, font-display, etc.
+   ============================================================ */
+
+@theme {
+  /* ---- Couleurs : surfaces & texte ---- */
+  --color-background: #f1f4fd;   /* fond d'app, lavande très clair */
+  --color-lavender: #c9d6f7;     /* lavande soutenu (sections, accents) */
+  --color-surface: #ffffff;      /* cartes */
+  --color-foreground: #15151b;   /* texte principal */
+  --color-muted: #6f7280;        /* texte secondaire */
+  --color-border: #e9ecf6;       /* bordures / séparateurs */
+
+  /* ---- Couleurs : marque & accents ---- */
+  --color-ink: #111114;          /* boutons pilule (CTA principal) */
+  --color-on-ink: #ffffff;
+  --color-brand: #7c93f0;        /* bleuet / périwinkle (couleur marque) */
+  --color-brand-soft: #c6d8fa;   /* bleu pastel */
+  --color-magenta: #e24fd8;      /* magenta vif (accent énergique) */
+  --color-magenta-soft: #f3c9e9; /* rose pastel */
+  --color-amber: #f4b63f;        /* jaune ambre */
+  --color-orange: #ff7a29;       /* orange (mise en avant) */
+
+  /* ---- Couleurs : sémantique (statuts) ---- */
+  --color-success: #2fb67c;
+  --color-danger: #e5484d;
+
+  /* ---- Rayons (très arrondi, façon référence) ---- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-card: 1.75rem;
+  --radius-pill: 9999px;
+
+  /* ---- Ombres douces ---- */
+  --shadow-soft: 0 6px 20px -8px rgba(28, 39, 89, 0.18);
+  --shadow-card: 0 14px 34px -14px rgba(28, 39, 89, 0.22);
+  --shadow-pop: 0 12px 26px -10px rgba(226, 79, 216, 0.45);
 }
 
+/* next/font expose les familles via des variables runtime — on les
+   relie aux tokens de police en mode "inline". */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-nunito);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ---- Base ---- */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Classes de composants réutilisables (à "appeler" partout) ---- */
+@layer components {
+  /* Boutons — base partagée (hauteur mini 44px = cible tactile) */
+  .btn,
+  .btn-primary,
+  .btn-brand,
+  .btn-accent,
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 min-h-11 px-5 py-3
+           rounded-full font-semibold text-base transition
+           active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none
+           cursor-pointer;
+  }
+  .btn-primary { @apply bg-ink text-on-ink; }
+  .btn-brand   { @apply bg-brand text-ink; }
+  .btn-accent  { @apply bg-magenta text-white; }
+  .btn-ghost   { @apply bg-surface text-foreground border border-border; }
+
+  /* Cartes */
+  .card      { @apply bg-surface rounded-card shadow-card p-5; }
+  .card-flat { @apply bg-surface rounded-card border border-border p-5; }
+
+  /* Pastilles / étiquettes */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1
+           text-sm font-medium;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5
+           text-xs font-semibold;
+  }
+
+  /* Conteneur mobile-first centré */
+  .screen { @apply mx-auto w-full max-w-md px-4; }
 }
