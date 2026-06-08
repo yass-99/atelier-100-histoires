@@ -22,8 +22,14 @@ export async function POST(req: Request) {
     if (booking) {
       const s = await getSession(booking.session_id);
       if (s) {
-        await sendConfirmation(booking, s);
-        await notifyOrganizer(booking, s);
+        // Emails non-bloquants : un échec d'envoi ne doit pas faire échouer
+        // le webhook (la réservation est déjà confirmée).
+        try {
+          await sendConfirmation(booking, s);
+          await notifyOrganizer(booking, s);
+        } catch (e) {
+          console.error("Echec envoi email (non bloquant) :", e);
+        }
       }
     }
   }
