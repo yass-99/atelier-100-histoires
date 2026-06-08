@@ -10,6 +10,7 @@ export type Session = {
   lieu: string;
   capacite: number;
   prix_cents: number;
+  image_url: string | null;
   statut: SessionStatus;
   places_reservees: number;
   created_at: string;
