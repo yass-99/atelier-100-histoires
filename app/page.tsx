@@ -1,8 +1,7 @@
 import { Sparkles, Ticket, PenLine, CalendarHeart } from "lucide-react";
 import { listPublishedSessions } from "@/lib/sessions";
-import { FeaturedSession } from "@/components/FeaturedSession";
-import { SessionRow } from "@/components/SessionRow";
-import { Reveal, Stagger, StaggerItem } from "@/components/motion";
+import { SessionsBoard } from "@/components/SessionsBoard";
+import { Reveal } from "@/components/motion";
 
 export const dynamic = "force-dynamic";
 
@@ -14,19 +13,21 @@ const STEPS = [
 
 export default async function Home() {
   const sessions = await listPublishedSessions();
-  const [featured, ...rest] = sessions;
 
   return (
     <main className="screen py-8">
-      <Reveal>
-        <p className="eyebrow text-brand-ink">Ateliers d&apos;écriture &amp; de récit</p>
-        <h1 className="mt-2 font-display text-[40px] leading-[1.04]">
-          Trouve ton prochain <span className="text-brand-ink">atelier</span>
-        </h1>
-        <p className="mt-3 text-lg text-muted">
-          Petites histoires. Grandes rencontres.
-        </p>
-      </Reveal>
+      {/* Bande haute colorée */}
+      <div className="hero-band tone-lavender rounded-b-[2rem] pt-2">
+        <Reveal>
+          <p className="eyebrow text-brand-ink">Ateliers d&apos;écriture &amp; de récit</p>
+          <h1 className="mt-2 font-display text-[40px] leading-[1.04]">
+            Trouve ton prochain <span className="text-brand-ink">atelier</span>
+          </h1>
+          <p className="mt-3 text-lg text-muted">
+            Petites histoires. Grandes rencontres.
+          </p>
+        </Reveal>
+      </div>
 
       {sessions.length === 0 ? (
         <Reveal className="mt-8">
@@ -39,27 +40,7 @@ export default async function Home() {
           </div>
         </Reveal>
       ) : (
-        <>
-          <Reveal delay={0.05} className="mt-7">
-            <FeaturedSession s={featured} />
-          </Reveal>
-
-          {rest.length > 0 && (
-            <section className="mt-9">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-display text-2xl">À venir</h2>
-                <span className="badge bg-ink text-on-ink">{rest.length}</span>
-              </div>
-              <Stagger className="space-y-3.5">
-                {rest.map((s, i) => (
-                  <StaggerItem key={s.id}>
-                    <SessionRow s={s} index={i + 1} />
-                  </StaggerItem>
-                ))}
-              </Stagger>
-            </section>
-          )}
-        </>
+        <SessionsBoard sessions={sessions} />
       )}
 
       {/* Comment ça marche */}
