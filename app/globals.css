@@ -14,7 +14,7 @@
   --color-lavender: #c9d6f7;     /* lavande soutenu (cartes, accents) */
   --color-surface: #ffffff;      /* cartes blanches */
   --color-foreground: #14141b;   /* texte principal */
-  --color-muted: #6b6e7e;        /* texte secondaire */
+  --color-muted: #54586a;        /* texte secondaire */
   --color-border: #e7eaf6;       /* bordures / séparateurs */
 
   /* ---- Couleurs : marque & accents (cartes multicolores) ---- */
@@ -67,7 +67,7 @@ h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.1;
 }
 
 /* ---- Classes de composants réutilisables ---- */
@@ -170,14 +170,16 @@ h1, h2, h3, h4 {
   .circle-btn {
     @apply inline-flex h-10 w-10 shrink-0 items-center justify-center
            rounded-full bg-white/90 text-ink shadow-soft backdrop-blur
-           transition active:scale-95;
+           transition active:scale-95
+           hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand;
   }
 
   /* Pastille de jour (strip horizontal scrollable) */
   .day-pill {
     @apply flex shrink-0 flex-col items-center justify-center gap-0.5
            rounded-2xl border border-border bg-surface px-3.5 py-2
-           text-center leading-none transition active:scale-95;
+           text-center leading-none transition active:scale-95
+           hover:border-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1;
   }
   .day-pill[data-active="true"] { @apply border-transparent bg-ink text-on-ink; }
 

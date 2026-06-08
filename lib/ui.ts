@@ -40,6 +40,11 @@ export function monthShort(iso: string): string {
     .replace(".", "");
 }
 
+/** Met une majuscule au premier caractère uniquement (évite le « À » parasite de capitalize). */
+export function capitalizeFirst(s: string): string {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
 /** Durée en minutes → "1h30" / "45 min" / "2 h". */
 export function formatDuree(min: number): string {
   if (!min) return "";

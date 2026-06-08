@@ -55,7 +55,7 @@ export default async function Home() {
                 className={`flex items-center gap-4 rounded-card ${step.tone} p-4 shadow-soft`}
               >
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-ink text-on-ink">
-                  <Icon className="h-5 w-5" strokeWidth={1.7} />
+                  <Icon className="h-5 w-5" strokeWidth={1.7} aria-hidden />
                 </span>
                 <div className="min-w-0">
                   <p className="font-display text-base font-extrabold">

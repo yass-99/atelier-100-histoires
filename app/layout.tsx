@@ -1,5 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito, DM_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -24,6 +24,8 @@ export const metadata: Metadata = {
   description: "Réservez votre place à nos ateliers d'écriture et de récit.",
 };
 
+export const viewport: Viewport = { viewportFit: "cover" };
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -37,8 +39,9 @@ export default function RootLayout({
       <body className="min-h-dvh flex flex-col">
         <ClerkProvider appearance={clerkAppearance}>
           <MotionProvider>
+            <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-on-ink focus:font-bold">Aller au contenu principal</a>
             <Header />
-            <div className="flex-1">{children}</div>
+            <div id="main-content" className="flex-1">{children}</div>
             <Footer />
           </MotionProvider>
         </ClerkProvider>

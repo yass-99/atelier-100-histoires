@@ -13,7 +13,7 @@ export default function SignInPage() {
           <Sparkles className="h-7 w-7" strokeWidth={2.4} />
         </span>
         <h1 className="mt-4 font-display text-3xl">Content de te revoir</h1>
-        <p className="mt-2 text-ink/70">Connecte-toi avec ton email.</p>
+        <p className="mt-2 text-muted">Connecte-toi avec ton email.</p>
       </div>
       <Reveal className="mt-6">
         <SignInForm />

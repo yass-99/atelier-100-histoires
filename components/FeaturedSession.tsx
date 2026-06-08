@@ -3,7 +3,7 @@ import { CalendarDays, MapPin, Users, ArrowRight } from "lucide-react";
 import type { Session } from "@/lib/types";
 import { placesRestantes } from "@/lib/sessions.shared";
 import { formatEUR } from "@/lib/money";
-import { formatDateLong, dayNumber, monthShort } from "@/lib/ui";
+import { formatDateLong, dayNumber, monthShort, capitalizeFirst } from "@/lib/ui";
 import { Floaty } from "@/components/motion";
 
 export function FeaturedSession({ s }: { s: Session }) {
@@ -37,15 +37,15 @@ export function FeaturedSession({ s }: { s: Session }) {
 
         <div className="mt-4 space-y-2 text-white/90">
           <p className="meta-row">
-            <CalendarDays className="h-4 w-4 shrink-0" strokeWidth={1.6} />
-            <span className="capitalize">{formatDateLong(s.date_heure)}</span>
+            <CalendarDays className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
+            <span>{capitalizeFirst(formatDateLong(s.date_heure))}</span>
           </p>
           <p className="meta-row">
-            <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.6} />
+            <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
             {s.lieu}
           </p>
           <p className="meta-row">
-            <Users className="h-4 w-4 shrink-0" strokeWidth={1.6} />
+            <Users className="h-4 w-4 shrink-0" strokeWidth={1.6} aria-hidden />
             {complet
               ? "Complet"
               : `${restantes} place${restantes > 1 ? "s" : ""} restante${restantes > 1 ? "s" : ""}`}
@@ -57,7 +57,7 @@ export function FeaturedSession({ s }: { s: Session }) {
             <p className="font-display text-3xl font-extrabold text-white">
               {formatEUR(s.prix_cents)}
             </p>
-            <p className="text-sm text-white/70">par place</p>
+            <p className="text-sm text-white/85">par place</p>
           </div>
 
           <Link

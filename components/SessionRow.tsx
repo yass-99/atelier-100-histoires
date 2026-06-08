@@ -12,6 +12,7 @@ export function SessionRow({ s, index = 0 }: { s: Session; index?: number }) {
   return (
     <Link
       href={`/ateliers/${s.id}`}
+      aria-label={s.titre}
       className={`group flex items-center gap-4 rounded-card ${tone} p-4 shadow-soft transition active:scale-[.98]`}
     >
       <div className="date-badge">
@@ -42,6 +43,7 @@ export function SessionRow({ s, index = 0 }: { s: Session; index?: number }) {
       <ChevronRight
         className="h-5 w-5 shrink-0 opacity-60 transition group-hover:translate-x-0.5 group-hover:opacity-100"
         strokeWidth={1.8}
+        aria-hidden
       />
     </Link>
   );
