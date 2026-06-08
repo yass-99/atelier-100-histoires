@@ -118,6 +118,46 @@ export default function StyleguidePage() {
           <div className="bg-ink text-on-ink rounded-pill shadow-pop p-4 text-sm">rounded-pill · shadow-pop</div>
         </div>
       </Section>
+
+      <Section title="Ticket & jours">
+        {/* E-ticket */}
+        <div className="ticket mx-auto max-w-sm">
+          <p className="text-xs font-bold uppercase tracking-wider text-white/70">Atelier des 100 histoires</p>
+          <h3 className="mt-1 text-xl font-extrabold">Écrire sa première histoire</h3>
+          <p className="mt-0.5 text-sm text-white/80">Samedi 15 juil. · 14h00 · Paris 11e</p>
+
+          {/* Ligne de perforation */}
+          <div className="ticket-perf">
+            <span className="ticket-notch ticket-notch-left" />
+            <span className="ticket-notch ticket-notch-right" />
+          </div>
+
+          {/* Zone QR (placeholder) */}
+          <div className="mt-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-white/70">Réf. billet</p>
+              <p className="font-bold">#A100-2025</p>
+            </div>
+            <div className="h-16 w-16 rounded-xl bg-white/20" aria-label="QR code placeholder" />
+          </div>
+        </div>
+
+        {/* Strip de jours */}
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
+          <button className="day-pill" type="button">
+            <span className="text-xs text-muted">sam.</span>
+            <span className="text-lg font-extrabold">14</span>
+          </button>
+          <button className="day-pill" data-active="true" type="button">
+            <span className="text-xs">dim.</span>
+            <span className="text-lg font-extrabold">15</span>
+          </button>
+          <button className="day-pill" type="button">
+            <span className="text-xs text-muted">lun.</span>
+            <span className="text-lg font-extrabold">16</span>
+          </button>
+        </div>
+      </Section>
     </main>
   );
 }

@@ -161,4 +161,47 @@ h1, h2, h3, h4 {
 
   /* Décor : pastille floue colorée en fond */
   .blob { @apply pointer-events-none absolute rounded-full blur-2xl; }
+
+  /* Bande haute colorée + feuille blanche qui remonte (motif Image #4) */
+  .hero-band { @apply relative -mx-4 px-4 pb-16; }
+  .sheet { @apply relative -mt-10 rounded-t-[2rem] bg-surface px-4 pt-6; }
+
+  /* Bouton rond icône (retour / partage) */
+  .circle-btn {
+    @apply inline-flex h-10 w-10 shrink-0 items-center justify-center
+           rounded-full bg-white/90 text-ink shadow-soft backdrop-blur
+           transition active:scale-95;
+  }
+
+  /* Pastille de jour (strip horizontal scrollable) */
+  .day-pill {
+    @apply flex shrink-0 flex-col items-center justify-center gap-0.5
+           rounded-2xl border border-border bg-surface px-3.5 py-2
+           text-center leading-none transition active:scale-95;
+  }
+  .day-pill[data-active="true"] { @apply border-transparent bg-ink text-on-ink; }
+
+  /* Mini-stat (détail atelier) */
+  .stat-chip {
+    @apply flex flex-1 flex-col items-center gap-1 rounded-2xl
+           border border-border bg-surface px-2 py-3 text-center;
+  }
+
+  /* E-ticket */
+  .ticket {
+    @apply relative overflow-visible rounded-card p-6 text-white shadow-lift;
+    background-image: linear-gradient(150deg, #9aa2ff 0%, #6f7cf7 100%);
+  }
+  /* Rangée de perforation : pointillés + encoches demi-cercle des deux côtés */
+  .ticket-perf { @apply relative my-5 h-0; }
+  .ticket-perf::before {
+    content: "";
+    @apply absolute left-0 right-0 top-0 border-t-2 border-dashed border-white/45;
+  }
+  .ticket-notch {
+    @apply absolute top-1/2 h-6 w-6 -translate-y-1/2 rounded-full;
+    background: var(--color-background);
+  }
+  .ticket-notch-left { @apply -left-9; }
+  .ticket-notch-right { @apply -right-9; }
 }
