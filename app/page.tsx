@@ -6,8 +6,8 @@ import { Faq } from "@/components/Faq";
 import { RestePrevenu } from "@/components/RestePrevenu";
 import { Reveal } from "@/components/motion";
 
-// ISR : la page est régénérée au plus toutes les 5 min (cache aligné sur listPublishedSessions).
-export const revalidate = 300;
+// Pas de cache : données fraîches à chaque visite.
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const sessions = await listPublishedSessions();
