@@ -21,7 +21,7 @@ export function SessionsBoard({ sessions }: { sessions: Session[] }) {
   const cards = showFeatured ? rest : visible;
 
   return (
-    <div className="sheet -mx-4 min-h-[45vh] pb-2">
+    <div className="min-h-[45vh] pb-2">
       <DayStrip days={days} active={active} onSelect={setActive} />
       {showFeatured && (
         <div className="mt-4">

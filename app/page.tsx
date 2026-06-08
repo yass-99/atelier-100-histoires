@@ -16,18 +16,16 @@ export default async function Home() {
 
   return (
     <main className="screen py-8">
-      {/* Bande haute colorée */}
-      <div className="hero-band tone-lavender rounded-b-[2rem] pt-2">
-        <Reveal>
-          <p className="eyebrow text-brand-ink">Ateliers d&apos;écriture &amp; de récit</p>
-          <h1 className="mt-2 font-display text-[40px] leading-[1.04]">
-            Trouve ton prochain <span className="text-brand-ink">atelier</span>
-          </h1>
-          <p className="mt-3 text-lg text-muted">
-            Petites histoires. Grandes rencontres.
-          </p>
-        </Reveal>
-      </div>
+      {/* En-tête centré, éditorial */}
+      <Reveal className="text-center">
+        <p className="eyebrow text-muted">Ateliers d&apos;écriture &amp; de récit</p>
+        <h1 className="mt-2 font-display text-[40px] leading-[1.04]">
+          Trouve ton prochain atelier
+        </h1>
+        <p className="mt-3 text-lg text-muted">
+          Petites histoires. Grandes rencontres.
+        </p>
+      </Reveal>
 
       {sessions.length === 0 ? (
         <Reveal className="mt-8">
@@ -40,7 +38,9 @@ export default async function Home() {
           </div>
         </Reveal>
       ) : (
-        <SessionsBoard sessions={sessions} />
+        <div className="mt-8">
+          <SessionsBoard sessions={sessions} />
+        </div>
       )}
 
       {/* Comment ça marche */}

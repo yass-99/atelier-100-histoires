@@ -29,8 +29,7 @@ export function DayStrip({
         onClick={() => onSelect("all")}
         className="day-pill min-w-16"
       >
-        <span className="text-[11px] font-bold uppercase opacity-70">Tous</span>
-        <span className="font-display text-base font-extrabold" aria-hidden>•</span>
+        <span className="text-[13px] font-bold uppercase">Tous</span>
       </button>
       {days.map((d) => (
         <button
