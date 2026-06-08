@@ -28,5 +28,23 @@ export const clerkAppearance = {
     footerActionLink: "text-[#7c93f0] font-bold",
     footer: "bg-transparent",
     otpCodeFieldInput: "rounded-xl border-border",
+
+    /* UserButton — déclencheur (avatar dans le header) */
+    userButtonTrigger:
+      "rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink",
+    userButtonAvatarBox: "h-9 w-9 rounded-full border-[1.5px] border-ink",
+
+    /* UserButton — popover : carte contournée encre, surface blanche (look « outlined ») */
+    userButtonPopoverCard:
+      "rounded-card border-[1.5px] border-ink bg-surface shadow-pop overflow-hidden",
+    userButtonPopoverMain: "bg-surface",
+    userPreviewMainIdentifier: "font-display font-extrabold text-foreground",
+    userPreviewSecondaryIdentifier: "text-muted",
+    userButtonPopoverActions: "p-1.5",
+    userButtonPopoverActionButton:
+      "rounded-2xl font-semibold text-foreground hover:bg-background",
+    userButtonPopoverActionButtonIcon: "text-muted",
+    userButtonPopoverActionButtonText: "font-semibold",
+    userButtonPopoverFooter: "border-t border-border bg-surface",
   },
 } as const;
