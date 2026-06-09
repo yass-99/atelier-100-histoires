@@ -1,9 +1,9 @@
-import { Users, Sparkle, PenLine } from "lucide-react";
+import { Users, Gem, Croissant } from "lucide-react";
 
 const POINTS = [
-  { icon: Users, text: "Petits groupes, ambiance bienveillante" },
-  { icon: Sparkle, text: "Tous niveaux — débutant·e bienvenu·e" },
-  { icon: PenLine, text: "Tu repars avec un texte bien à toi" },
+  { icon: Gem, text: "Tu repars avec ta création — bijou, tableau, mosaïque…" },
+  { icon: Users, text: "Pour les petits comme pour les grands" },
+  { icon: Croissant, text: "Des lieux chaleureux, parfois consommation incluse" },
 ];
 
 export function Promesse() {
@@ -11,7 +11,7 @@ export function Promesse() {
     <section className="rounded-card tone-brand p-6 shadow-lift">
       <p className="eyebrow text-white/70">La promesse</p>
       <h2 className="mt-2 font-display text-[28px] leading-[1.1] text-white">
-        Écrire, ensemble, sans pression.
+        Crée de tes mains, repars avec ta création.
       </h2>
       <ul className="mt-5 space-y-3">
         {POINTS.map(({ icon: Icon, text }) => (

@@ -1,6 +1,7 @@
 import { CalendarHeart } from "lucide-react";
 import { listPublishedSessions } from "@/lib/sessions";
 import { SessionsBoard } from "@/components/SessionsBoard";
+import { HeroAlaUne } from "@/components/HeroAlaUne";
 import { Promesse } from "@/components/Promesse";
 import { Faq } from "@/components/Faq";
 import { RestePrevenu } from "@/components/RestePrevenu";
@@ -11,19 +12,34 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const sessions = await listPublishedSessions();
+  const aLaUne = sessions.filter((s) => s.a_la_une);
 
   return (
     <main className="screen space-y-12 py-8">
-      {/* En-tête centré, éditorial */}
-      <Reveal className="text-center">
-        <p className="eyebrow text-muted">Ateliers d&apos;écriture &amp; de récit</p>
-        <h1 className="mt-2 font-display text-[40px] leading-[1.04]">
-          Trouve ton prochain atelier
-        </h1>
-        <p className="mt-3 text-lg text-muted">
-          Petites histoires. Grandes rencontres.
-        </p>
-      </Reveal>
+      {aLaUne.length > 0 ? (
+        <Reveal className="space-y-4">
+          {/* En-tête compact, aligné à gauche */}
+          <div>
+            <p className="eyebrow text-muted">Ateliers créatifs pour petits &amp; grands</p>
+            <h1 className="mt-1.5 font-display text-[30px] leading-[1.05]">
+              À la une
+            </h1>
+          </div>
+          {/* Hero photo des ateliers mis en avant */}
+          <HeroAlaUne sessions={aLaUne} />
+        </Reveal>
+      ) : (
+        /* Repli éditorial : aucun atelier à la une */
+        <Reveal className="text-center">
+          <p className="eyebrow text-muted">Ateliers créatifs pour petits &amp; grands</p>
+          <h1 className="mt-2 font-display text-[40px] leading-[1.04]">
+            Trouve ton prochain atelier
+          </h1>
+          <p className="mt-3 text-lg text-muted">
+            Crée de tes mains, repars avec ta création.
+          </p>
+        </Reveal>
+      )}
 
       {sessions.length === 0 ? (
         <Reveal>

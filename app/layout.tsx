@@ -21,8 +21,9 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Atelier aux 100 histoires",
-  description: "Réservez votre place à nos ateliers d'écriture et de récit.",
+  title: "Atelier aux 100 histoires — Ateliers créatifs pour petits & grands",
+  description:
+    "Bijoux, peinture, mosaïque, textile… Crée de tes mains dans des lieux chaleureux (boulangeries, restaurants) et repars avec ta création. Réserve ton atelier.",
 };
 
 export const viewport: Viewport = { viewportFit: "cover" };

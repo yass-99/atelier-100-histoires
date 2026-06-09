@@ -9,9 +9,9 @@ export function RestePrevenu() {
           <BellRing className="h-5 w-5" strokeWidth={2} />
         </span>
         <div>
-          <p className="font-display text-lg leading-tight">Sois prévenu des prochaines dates</p>
+          <p className="font-display text-lg leading-tight">Sois prévenu des prochains ateliers</p>
           <p className="mt-1 text-sm text-foreground/70">
-            Crée ton compte pour ne rater aucun atelier.
+            Crée ton compte pour ne rater aucune date — bijoux, peinture, mosaïque…
           </p>
         </div>
       </div>

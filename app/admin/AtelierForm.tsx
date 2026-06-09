@@ -66,7 +66,7 @@ export function AtelierForm() {
     <form onSubmit={onSubmit} className="card space-y-4">
       <div>
         <label className="field-label" htmlFor="titre">Titre</label>
-        <input id="titre" name="titre" required placeholder="Écrire sa première histoire" className="field" />
+        <input id="titre" name="titre" required placeholder="Atelier bijoux en boulangerie" className="field" />
       </div>
 
       <div>

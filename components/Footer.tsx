@@ -12,7 +12,7 @@ export function Footer() {
       <div className="screen py-12">
         <Logo tone="light" className="text-2xl" />
         <p className="mt-3 text-sm text-on-ink/70">
-          Petites histoires. Grandes rencontres.
+          Crée de tes mains, repars avec ta création.
         </p>
 
         <nav className="mt-6 flex flex-col gap-2 text-sm font-semibold">

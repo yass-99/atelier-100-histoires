@@ -83,7 +83,7 @@ export default function StyleguidePage() {
       <Section title="Pastilles & badges">
         <div className="flex flex-wrap items-center gap-2">
           <span className="chip bg-brand-soft text-ink">Samedi 14h</span>
-          <span className="chip bg-magenta-soft text-ink">Écriture</span>
+          <span className="chip bg-magenta-soft text-ink">Bijoux</span>
           <span className="chip bg-amber/20 text-ink">3 places restantes</span>
           <span className="badge bg-success text-white">Confirmé</span>
           <span className="badge bg-danger text-white">Complet</span>
@@ -94,8 +94,8 @@ export default function StyleguidePage() {
         <article className="card">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <span className="chip bg-magenta-soft text-ink">Écriture</span>
-              <h3 className="mt-2 text-xl">Écrire sa première histoire</h3>
+              <span className="chip bg-magenta-soft text-ink">Bijoux</span>
+              <h3 className="mt-2 text-xl">Atelier bijoux en boulangerie</h3>
               <p className="text-sm text-muted">Samedi 15 juil. · 14h00 · Paris 11e</p>
             </div>
             <div className="text-right">
@@ -123,7 +123,7 @@ export default function StyleguidePage() {
         {/* E-ticket */}
         <div className="ticket mx-auto max-w-sm">
           <p className="text-xs font-bold uppercase tracking-wider text-white/70">Atelier aux 100 histoires</p>
-          <h3 className="mt-1 text-xl font-extrabold">Écrire sa première histoire</h3>
+          <h3 className="mt-1 text-xl font-extrabold">Atelier bijoux en boulangerie</h3>
           <p className="mt-0.5 text-sm text-white/80">Samedi 15 juil. · 14h00 · Paris 11e</p>
 
           {/* Ligne de perforation */}
