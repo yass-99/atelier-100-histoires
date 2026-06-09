@@ -5,6 +5,7 @@ import { HeroAlaUne } from "@/components/HeroAlaUne";
 import { Promesse } from "@/components/Promesse";
 import { Faq } from "@/components/Faq";
 import { RestePrevenu } from "@/components/RestePrevenu";
+import { MysteryPopup } from "@/components/MysteryPopup";
 import { Reveal } from "@/components/motion";
 
 // Pas de cache : données fraîches à chaque visite.
@@ -66,6 +67,8 @@ export default async function Home() {
       <Reveal>
         <RestePrevenu />
       </Reveal>
+
+      <MysteryPopup />
     </main>
   );
 }
