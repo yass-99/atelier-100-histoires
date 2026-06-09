@@ -19,11 +19,15 @@ export default function Confidentialite() {
         <p className="text-muted">[À COMPLÉTER — gabarit RGPD indicatif.]</p>
         <h2 className="font-display text-lg">Données collectées</h2>
         <p className="text-foreground/90">
-          Nom et email lors d’une réservation&nbsp;; données de paiement traitées par Stripe (non stockées par nos soins).
+          Nom et email lors d’une réservation&nbsp;; données de paiement traitées par Stripe (non stockées par nos soins)&nbsp;;
+          email lorsque vous acceptez de recevoir nos actualités et offres (réduction mystère, newsletter).
         </p>
         <h2 className="font-display text-lg">Finalité</h2>
         <p className="text-foreground/90">
-          Gestion des réservations et envoi des confirmations.
+          Gestion des réservations et envoi des confirmations. Avec votre consentement explicite&nbsp;:
+          envoi d’actualités et d’offres par email. Vous pouvez retirer ce consentement à tout moment
+          (lien de désinscription ou simple demande par email)&nbsp;; votre adresse est alors supprimée
+          de notre liste de diffusion.
         </p>
         <h2 className="font-display text-lg">Sous-traitants</h2>
         <p className="text-foreground/90">Supabase, Stripe, Clerk, Resend, Vercel.</p>
