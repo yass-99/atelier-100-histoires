@@ -13,9 +13,12 @@ const SCROLL_RATIO = 0.3;
  * Pop-up « réduction mystère » : capture d'email avec consentement marketing
  * explicite (RGPD), tirage révélé immédiatement. Affichée une seule fois par
  * visiteur (localStorage), après 8 s ou 30 % de scroll — le premier des deux.
+ * Si le visiteur la referme sans jouer, un bouton cadeau animé reste collé en
+ * bas à droite pour lui laisser une seconde chance.
  */
 export function MysteryPopup() {
   const [visible, setVisible] = useState(false);
+  const [bubble, setBubble] = useState(false);
   const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,8 +26,16 @@ export function MysteryPopup() {
   const triggered = useRef(false);
 
   // Déclenchement : 8 s ou 30 % de scroll, une seule fois par visiteur.
+  // Déjà refusée → seulement le bouton cadeau. Déjà gagnée → plus rien.
   useEffect(() => {
-    if (localStorage.getItem(STORAGE_KEY)) return;
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === "claimed") return;
+    if (saved === "dismissed") {
+      // Apparition différée : évite le flash à l'hydratation et la règle
+      // react-hooks/set-state-in-effect (pas de setState synchrone en effet).
+      const t = setTimeout(() => setBubble(true), 600);
+      return () => clearTimeout(t);
+    }
 
     function show() {
       if (triggered.current) return;
@@ -56,8 +67,20 @@ export function MysteryPopup() {
   }, [visible]);
 
   function dismiss() {
-    localStorage.setItem(STORAGE_KEY, pct ? "claimed" : "dismissed");
+    if (pct) {
+      localStorage.setItem(STORAGE_KEY, "claimed");
+      setVisible(false);
+      return;
+    }
+    // Refus : on garde une porte d'entrée discrète mais visible.
+    localStorage.setItem(STORAGE_KEY, "dismissed");
     setVisible(false);
+    setBubble(true);
+  }
+
+  function reopen() {
+    setBubble(false);
+    setVisible(true);
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -86,6 +109,33 @@ export function MysteryPopup() {
 
   return (
     <AnimatePresence>
+      {bubble && !visible && (
+        <motion.button
+          key="bubble"
+          type="button"
+          onClick={reopen}
+          aria-label="Découvrir ma réduction mystère"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0, opacity: 0 }}
+          transition={{ duration: 0.3, ease: EASE }}
+          className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border-[1.5px] border-ink bg-amber text-ink shadow-lift transition active:scale-95"
+        >
+          {/* Secousse périodique pour attirer l'œil sans épuiser */}
+          <motion.span
+            animate={{ rotate: [0, -16, 14, -10, 8, -4, 0] }}
+            transition={{ duration: 0.7, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
+            className="flex"
+          >
+            <Gift className="h-6 w-6" strokeWidth={2} aria-hidden />
+          </motion.span>
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-danger opacity-60" />
+            <span className="relative inline-flex h-4 w-4 rounded-full border border-ink bg-danger" />
+          </span>
+        </motion.button>
+      )}
+
       {visible && (
         <motion.div
           key="overlay"
