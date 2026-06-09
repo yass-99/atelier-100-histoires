@@ -1,5 +1,6 @@
 export type SessionStatus = "brouillon" | "publie" | "annule";
 export type BookingStatus = "pending" | "confirmed" | "cancelled";
+export type PublicCible = "adultes" | "enfants" | "tous";
 
 export type Session = {
   id: string;
@@ -11,6 +12,12 @@ export type Session = {
   capacite: number;
   prix_cents: number;
   image_url: string | null;
+  image_urls: string[] | null;
+  a_la_une: boolean;
+  public_cible: PublicCible;
+  age_minimum: number | null;
+  conso_incluse: boolean;
+  conso_detail: string | null;
   statut: SessionStatus;
   places_reservees: number;
   created_at: string;
