@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
@@ -10,14 +9,17 @@ import {
   Hourglass,
   Users,
   Banknote,
+  UsersRound,
+  Coffee,
 } from "lucide-react";
 import { getSession } from "@/lib/sessions";
-import { placesRestantes } from "@/lib/sessions.shared";
+import { placesRestantes, publicCibleLabel } from "@/lib/sessions.shared";
 import { formatEUR } from "@/lib/money";
 import { formatDateLong, formatDateShort, formatHeure, formatDuree, capitalizeFirst } from "@/lib/ui";
 import { Reveal } from "@/components/motion";
 import { CircleButton } from "@/components/CircleButton";
 import { ShareButton } from "@/components/ShareButton";
+import { PhotoCarousel } from "@/components/PhotoCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +53,7 @@ export default async function AtelierPage({ params }: { params: Promise<{ id: st
   const restantes = placesRestantes(s);
   const complet = restantes <= 0;
   const heure = formatHeure(s.date_heure);
+  const photos = s.image_urls?.length ? s.image_urls : s.image_url ? [s.image_url] : [];
 
   return (
     <main className="screen">
@@ -66,8 +69,8 @@ export default async function AtelierPage({ params }: { params: Promise<{ id: st
 
       {/* Hero : image ou aplat de couleur uni */}
       <div className="relative -mx-4 h-56 overflow-hidden rounded-b-[2rem] border-b-[1.5px] border-ink">
-        {s.image_url ? (
-          <Image src={s.image_url} alt={s.titre} fill sizes="100vw" className="object-cover" priority />
+        {photos.length > 0 ? (
+          <PhotoCarousel images={photos} alt={s.titre} />
         ) : (
           <div className="absolute inset-0 tone-brand" />
         )}
@@ -97,6 +100,18 @@ export default async function AtelierPage({ params }: { params: Promise<{ id: st
             <Info icon={Hourglass} label="Durée" value={s.duree ? formatDuree(s.duree) : "—"} />
             <Info icon={Users} label="Places" value={complet ? "0" : String(restantes)} />
             <Info icon={Banknote} label="Prix" value={`${formatEUR(s.prix_cents)} / place`} />
+            <Info
+              icon={UsersRound}
+              label="Public"
+              value={publicCibleLabel(s.public_cible, s.age_minimum)}
+            />
+            {s.conso_incluse && (
+              <Info
+                icon={Coffee}
+                label="Sur place"
+                value={s.conso_detail || "Consommation incluse"}
+              />
+            )}
           </dl>
         </div>
 

@@ -4,8 +4,9 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, CalendarDays, Clock, MapPin, Hourglass } from "lucide-react";
 import type { Session } from "@/lib/types";
-import { placesRestantes } from "@/lib/sessions.shared";
+import { placesRestantes, publicCibleLabel } from "@/lib/sessions.shared";
 import { formatEUR } from "@/lib/money";
+import { CompleteSignal } from "./CompleteSignal";
 import {
   dayNumber,
   monthShort,
@@ -63,22 +64,22 @@ export function AtelierCard({ s, index = 0 }: { s: Session; index?: number }) {
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
-          className="flex w-full items-center gap-3 p-3.5 text-left transition active:opacity-80"
+          className="relative flex w-full items-center gap-3 p-3.5 text-left transition active:opacity-80"
         >
-          <div className="min-w-0 flex-1">
+          <div className={`min-w-0 flex-1 ${complet ? "opacity-50" : ""}`}>
             <h3 className="truncate font-display text-lg leading-tight">{s.titre}</h3>
             <p className="mt-1 text-sm">
               <span className="font-bold">{formatEUR(s.prix_cents)}</span>
-              <span className="text-muted">
-                {" · "}
-                {complet ? (
-                  <span className="font-bold text-danger">Complet</span>
-                ) : (
-                  `${restantes} place${restantes > 1 ? "s" : ""}`
-                )}
-              </span>
+              {!complet && (
+                <span className="text-muted"> · {restantes} place{restantes > 1 ? "s" : ""}</span>
+              )}
             </p>
           </div>
+
+          {/* Tampon COMPLET (effet cachet) */}
+          <CompleteSignal complete={complet} className="absolute right-14 top-1/2 -translate-y-1/2" />
+
+
           <motion.span
             className="arrow-fab bg-ink text-on-ink"
             animate={{ rotate: open ? 180 : 0 }}
@@ -100,6 +101,14 @@ export function AtelierCard({ s, index = 0 }: { s: Session; index?: number }) {
               className="overflow-hidden"
             >
               <div className="space-y-4 px-4 pb-4 pt-1">
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="chip bg-background text-ink">
+                    {publicCibleLabel(s.public_cible, s.age_minimum)}
+                  </span>
+                  {s.conso_incluse && (
+                    <span className="chip bg-amber-soft text-ink">Conso incluse</span>
+                  )}
+                </div>
                 <dl className="grid grid-cols-2 gap-3">
                   <Info icon={CalendarDays} label="Date" value={capitalizeFirst(formatDateShort(s.date_heure))} />
                   <Info icon={Clock} label="Heure" value={heure} />
