@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { Gift, Loader2, PartyPopper, X } from "lucide-react";
 
@@ -24,6 +25,9 @@ export function MysteryPopup() {
   const [error, setError] = useState<string | null>(null);
   const [pct, setPct] = useState<number | null>(null);
   const triggered = useRef(false);
+  // Connecté → email pré-rempli (une friction en moins).
+  const { user } = useUser();
+  const userEmail = user?.primaryEmailAddress?.emailAddress ?? "";
 
   // Déclenchement : 8 s ou 30 % de scroll, une seule fois par visiteur.
   // Déjà refusée → seulement le bouton cadeau. Déjà gagnée → plus rien.
@@ -172,27 +176,26 @@ export function MysteryPopup() {
                   <Gift className="h-6 w-6" strokeWidth={2} aria-hidden />
                 </span>
                 <h2 className="mt-4 font-display text-2xl leading-tight">
-                  Une réduction mystère t&apos;attend 🎁
+                  Psst… on a un cadeau pour toi 🎁
                 </h2>
                 <p className="mt-2 text-sm text-muted">
-                  Laisse ton email et découvre ta remise (jusqu&apos;à −15 %) sur ton
-                  prochain atelier.
+                  Ton email contre une remise mystère. Tu joues&nbsp;?
                 </p>
 
                 <form onSubmit={onSubmit} className="mt-5 space-y-3">
-                  <div>
-                    <label className="field-label" htmlFor="mystery-email">Email</label>
-                    <input
-                      id="mystery-email"
-                      name="email"
-                      type="email"
-                      required
-                      inputMode="email"
-                      autoComplete="email"
-                      placeholder="ton@email.fr"
-                      className="field"
-                    />
-                  </div>
+                  <input
+                    key={userEmail || "anon"}
+                    id="mystery-email"
+                    name="email"
+                    type="email"
+                    required
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="ton@email.fr"
+                    defaultValue={userEmail}
+                    aria-label="Email"
+                    className="field"
+                  />
 
                   <label className="flex items-start gap-2.5 text-xs text-muted">
                     <input
@@ -202,11 +205,10 @@ export function MysteryPopup() {
                       className="mt-0.5 h-4 w-4 shrink-0 accent-ink"
                     />
                     <span>
-                      J&apos;accepte de recevoir par email les actualités et offres de
-                      l&apos;Atelier aux 100 histoires. Désinscription possible à tout
+                      OK pour recevoir vos offres par email. Désinscription à tout
                       moment —{" "}
                       <Link href="/confidentialite" className="underline">
-                        politique de confidentialité
+                        confidentialité
                       </Link>
                       .
                     </span>
@@ -220,9 +222,9 @@ export function MysteryPopup() {
 
                   <button className="btn-primary w-full" disabled={loading || !consent}>
                     {loading ? (
-                      <><Loader2 className="h-5 w-5 animate-spin" /> Tirage en cours…</>
+                      <><Loader2 className="h-5 w-5 animate-spin" /> Tirage…</>
                     ) : (
-                      <><Gift className="h-5 w-5" /> Découvrir ma remise</>
+                      <><Gift className="h-5 w-5" /> Je découvre</>
                     )}
                   </button>
                 </form>
@@ -238,11 +240,10 @@ export function MysteryPopup() {
                   <PartyPopper className="h-7 w-7" strokeWidth={2} aria-hidden />
                 </span>
                 <h2 className="mt-4 font-display text-3xl leading-tight">
-                  −{pct} % sur ton prochain atelier !
+                  −{pct} % pour toi !
                 </h2>
                 <p className="mt-2 text-sm text-muted">
-                  Ta remise sera appliquée automatiquement quand tu réserveras avec
-                  cet email.
+                  Appliqué automatiquement quand tu réserves avec cet email.
                 </p>
                 <button type="button" onClick={dismiss} className="btn-primary mt-5 w-full">
                   C&apos;est noté !
