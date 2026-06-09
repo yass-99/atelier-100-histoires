@@ -3,6 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { confirmBooking, cancelBooking, releaseSeats } from "@/lib/bookings";
 import { getSession } from "@/lib/sessions";
 import { sendConfirmation, notifyOrganizer } from "@/lib/email";
+import { markDiscountUsed } from "@/lib/leads";
 
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature");
@@ -17,9 +18,18 @@ export async function POST(req: Request) {
   }
 
   if (event.type === "checkout.session.completed") {
-    const cs = event.data.object as { id: string };
+    const cs = event.data.object as { id: string; metadata?: Record<string, string> };
     const booking = await confirmBooking(cs.id); // idempotent
     if (booking) {
+      // Remise mystère : consommée seulement quand le paiement est confirmé.
+      const mysteryEmail = cs.metadata?.mystery_email;
+      if (mysteryEmail) {
+        try {
+          await markDiscountUsed(mysteryEmail);
+        } catch (e) {
+          console.error("Echec marquage remise (non bloquant) :", e);
+        }
+      }
       const s = await getSession(booking.session_id);
       if (s) {
         // Emails non-bloquants : un échec d'envoi ne doit pas faire échouer

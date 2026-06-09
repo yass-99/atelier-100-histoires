@@ -13,7 +13,25 @@ export function ReserveForm({
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [discount, setDiscount] = useState<number | null>(null);
   const total = qty * prixCents;
+  // Même formule que le serveur (app/api/checkout) : arrondi sur le total en cents.
+  const totalDu = discount ? Math.round((total * (100 - discount)) / 100) : total;
+
+  async function checkDiscount(email: string) {
+    if (!email.includes("@")) return;
+    try {
+      const res = await fetch("/api/leads/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      setDiscount(typeof data.pct === "number" ? data.pct : null);
+    } catch {
+      setDiscount(null);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,7 +79,12 @@ export function ReserveForm({
 
       <div>
         <label className="field-label" htmlFor="email">Email</label>
-        <input id="email" name="email" type="email" required inputMode="email" autoComplete="email" placeholder="pour recevoir ta confirmation" defaultValue={defaultEmail} className="field" />
+        <input id="email" name="email" type="email" required inputMode="email" autoComplete="email" placeholder="pour recevoir ta confirmation" defaultValue={defaultEmail} className="field" onBlur={(e) => checkDiscount(e.target.value.trim())} />
+        {discount && (
+          <p className="mt-1.5 text-sm font-medium text-success" role="status">
+            🎁 Ta remise mystère de −{discount} % sera appliquée au paiement.
+          </p>
+        )}
       </div>
 
       <div>
@@ -82,8 +105,15 @@ export function ReserveForm({
       <div className="flex items-baseline justify-between border-t border-dashed border-ink/20 pt-3">
         <span className="text-sm font-bold">
           {qty} place{qty > 1 ? "s" : ""} × {formatEUR(prixCents)}
+          {discount ? <span className="block font-medium text-success">Remise mystère −{discount} %</span> : null}
         </span>
-        <motion.span key={total} initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }} className="font-display text-2xl font-extrabold tabular-nums">{formatEUR(total)}</motion.span>
+        <motion.span key={totalDu} initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }} className="font-display text-2xl font-extrabold tabular-nums">
+          {discount ? (
+            <><span className="mr-2 text-base font-semibold text-muted line-through">{formatEUR(total)}</span>{formatEUR(totalDu)}</>
+          ) : (
+            formatEUR(total)
+          )}
+        </motion.span>
       </div>
 
       {error && (
@@ -91,7 +121,7 @@ export function ReserveForm({
       )}
 
       <button className="btn-primary h-14 w-full" disabled={loading}>
-        {loading ? (<><Loader2 className="h-5 w-5 animate-spin" /> Accès au paiement sécurisé…</>) : (<><Lock className="h-4 w-4" strokeWidth={1.8} /> Payer {formatEUR(total)}</>)}
+        {loading ? (<><Loader2 className="h-5 w-5 animate-spin" /> Accès au paiement sécurisé…</>) : (<><Lock className="h-4 w-4" strokeWidth={1.8} /> Payer {formatEUR(totalDu)}</>)}
       </button>
       <p className="text-center text-xs text-muted">Paiement sécurisé Stripe · <Link href="/cgv" className="underline">CGV</Link></p>
     </form>

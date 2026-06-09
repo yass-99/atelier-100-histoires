@@ -7,7 +7,8 @@ import {
   createPendingBooking,
   attachStripeSession,
 } from "@/lib/bookings";
-import { stripe } from "@/lib/stripe";
+import { ensureMysteryCoupon, stripe } from "@/lib/stripe";
+import { findActiveDiscount } from "@/lib/leads";
 
 export async function POST(req: Request) {
   const { sessionId, nb_places, nom, email } = await req.json();
@@ -29,7 +30,21 @@ export async function POST(req: Request) {
 
   try {
     const { userId } = await auth();
-    const montant = s.prix_cents * qty;
+
+    // Remise mystère éventuelle (la réservation prime : toute erreur → sans remise)
+    let discounts: { coupon: string }[] | undefined;
+    let pct = 0;
+    const found = await findActiveDiscount(email).catch(() => null);
+    if (found) {
+      try {
+        discounts = [{ coupon: await ensureMysteryCoupon(found) }];
+        pct = found;
+      } catch {
+        discounts = undefined;
+      }
+    }
+
+    const montant = Math.round((s.prix_cents * qty * (100 - pct)) / 100);
     const booking = await createPendingBooking({
       session_id: sessionId,
       email,
@@ -54,7 +69,14 @@ export async function POST(req: Request) {
           },
         },
       ],
-      metadata: { booking_id: booking.id, session_id: sessionId, nb_places: String(qty) },
+      discounts,
+      metadata: {
+        booking_id: booking.id,
+        session_id: sessionId,
+        nb_places: String(qty),
+        mystery_email: pct ? email : "",
+        mystery_pct: String(pct),
+      },
       success_url: `${base}/merci?b=${booking.id}`,
       cancel_url: `${base}/ateliers/${sessionId}`,
     });
