@@ -1,5 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { frFR } from "@clerk/localizations";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Nunito, DM_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
@@ -45,6 +46,7 @@ export default function RootLayout({
             <Header />
             <div id="main-content" className="flex-1">{children}</div>
             <Footer />
+            <Analytics />
           </MotionProvider>
         </ClerkProvider>
       </body>
