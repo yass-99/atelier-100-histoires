@@ -1,7 +1,21 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { weekdayShort, isMonday, type DayCell } from "@/lib/dates";
 import { dayNumber } from "@/lib/ui";
+import { SPRING_SNAPPY } from "@/lib/motion";
+
+/** Pastille active : aplat ambre qui glisse d'un jour à l'autre (layoutId). */
+function ActivePill() {
+  return (
+    <motion.span
+      layoutId="day-active"
+      transition={SPRING_SNAPPY}
+      className="absolute inset-0 rounded-2xl bg-amber"
+      aria-hidden
+    />
+  );
+}
 
 /**
  * Slider « semaine glissante » lun→dim. Filtre (pas onglets) : boutons-bascule
@@ -42,7 +56,8 @@ export function DayStrip({
         onClick={() => onSelect("all")}
         className="day-pill min-w-16"
       >
-        <span className="text-[13px] font-bold uppercase">Tous</span>
+        {active === "all" && <ActivePill />}
+        <span className="relative z-10 text-[13px] font-bold uppercase">Tous</span>
       </button>
 
       {cells.map((c) => {
@@ -60,10 +75,11 @@ export function DayStrip({
               onClick={() => c.hasSession && onSelect(c.key)}
               className="day-pill min-w-14 disabled:opacity-35 disabled:active:scale-100"
             >
-              <span className="text-[11px] font-bold uppercase opacity-70" aria-hidden>
+              {active === c.key && <ActivePill />}
+              <span className="relative z-10 text-[11px] font-bold uppercase opacity-70" aria-hidden>
                 {weekdayShort(c.iso)}
               </span>
-              <span className="font-display text-base font-extrabold" aria-hidden>
+              <span className="relative z-10 font-display text-base font-extrabold" aria-hidden>
                 {dayNumber(c.iso)}
               </span>
             </button>

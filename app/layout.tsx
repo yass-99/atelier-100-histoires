@@ -3,8 +3,10 @@ import { frFR } from "@clerk/localizations";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Nunito, DM_Sans } from "next/font/google";
+import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { DiscountBannerSlot } from "@/components/DiscountBannerSlot";
 import { MotionProvider } from "@/components/motion";
 import { clerkAppearance } from "@/components/clerk-appearance";
 import "./globals.css";
@@ -37,6 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
+      data-scroll-behavior="smooth"
       className={`${nunito.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="min-h-dvh flex flex-col">
@@ -44,7 +47,10 @@ export default function RootLayout({
           <MotionProvider>
             <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-ink focus:px-4 focus:py-2 focus:text-on-ink focus:font-bold">Aller au contenu principal</a>
             <Header />
-            <div id="main-content" className="flex-1">{children}</div>
+            <Suspense fallback={null}>
+              <DiscountBannerSlot />
+            </Suspense>
+            <div id="main-content" className="flex flex-1 flex-col min-h-0">{children}</div>
             <Footer />
             <Analytics />
           </MotionProvider>

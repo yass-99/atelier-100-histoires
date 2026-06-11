@@ -14,7 +14,7 @@ const PERKS = [
 
 export default function SignUpPage() {
   return (
-    <main className="min-h-[calc(100dvh-4rem)]">
+    <main className="flex min-h-[calc(100dvh-4rem)] flex-col justify-center">
       <div className="screen py-12">
         <div className="flex flex-col items-center text-center">
           <p className="font-display text-sm font-bold uppercase tracking-[0.18em] text-foreground/60">

@@ -1,4 +1,8 @@
+"use client";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { EASE, DURATION } from "@/lib/motion";
 
 const FAQ = [
   {
@@ -31,19 +35,51 @@ const FAQ = [
   },
 ];
 
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="faq-item">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full cursor-pointer select-none items-center justify-between gap-3 px-5 py-4 text-left font-display text-base font-extrabold"
+      >
+        {q}
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: DURATION.base, ease: EASE }}
+          className="shrink-0 text-muted"
+          aria-hidden
+        >
+          <ChevronDown className="h-5 w-5" />
+        </motion.span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: DURATION.base, ease: EASE }}
+            className="overflow-hidden"
+          >
+            <p className="px-5 pb-5 text-sm text-muted">{a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export function Faq() {
   return (
     <section>
       <h2 className="mb-4 font-display text-2xl">Questions fréquentes</h2>
       <div className="space-y-3">
         {FAQ.map(({ q, a }) => (
-          <details key={q} className="faq-item">
-            <summary>
-              {q}
-              <ChevronDown className="faq-chevron" aria-hidden />
-            </summary>
-            <p className="px-5 pb-5 text-sm text-muted">{a}</p>
-          </details>
+          <FaqItem key={q} q={q} a={a} />
         ))}
       </div>
     </section>

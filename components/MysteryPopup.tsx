@@ -5,8 +5,8 @@ import { useUser } from "@clerk/nextjs";
 import { track } from "@vercel/analytics";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import { Gift, Loader2, X } from "lucide-react";
+import { EASE, SPRING_SNAPPY } from "@/lib/motion";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
 const STORAGE_KEY = "mystery_popup_v1";
 const DELAY_MS = 8000;
 const SCROLL_RATIO = 0.3;
@@ -18,7 +18,7 @@ const TITLE_WORDS = ["On", "a", "caché", "quelque", "chose", "sur", "cette", "p
 
 const wordsContainer = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.25 } },
+  show: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } },
 };
 const word = {
   hidden: { opacity: 0, y: 18, filter: "blur(6px)" },
@@ -84,8 +84,11 @@ export function MysteryPopup() {
   const [pct, setPct] = useState<number | null>(null);
   const [shownPct, setShownPct] = useState(0);
   const triggered = useRef(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const lastFocused = useRef<HTMLElement | null>(null);
   // Connecté → email pré-rempli (une friction en moins).
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const userEmail = user?.primaryEmailAddress?.emailAddress ?? "";
 
   // Déclenchement : 8 s ou 30 % de scroll, une seule fois par visiteur.
@@ -119,16 +122,102 @@ export function MysteryPopup() {
     };
   }, []);
 
-  // Fermeture à la touche Échap.
+  // A11y : focus sur la carte à l'ouverture, restauré sur le déclencheur à la
+  // fermeture.
+  useEffect(() => {
+    if (!visible) return;
+    lastFocused.current = (document.activeElement as HTMLElement) ?? null;
+    cardRef.current?.focus();
+    return () => lastFocused.current?.focus?.();
+  }, [visible]);
+
+  // Échap ferme · Tab reste piégé dans la carte (dismiss à jour via deps).
   useEffect(() => {
     if (!visible) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") dismiss();
+      if (e.key === "Escape") {
+        dismiss();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const card = cardRef.current;
+      if (!card) return;
+      const els = Array.from(
+        card.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      if (els.length === 0) return;
+      const first = els[0];
+      const last = els[els.length - 1];
+      const act = document.activeElement;
+      if (e.shiftKey && (act === first || act === card)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && act === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, step, pct]);
+
+  // Gèle le scroll d'arrière-plan pendant l'ouverture (technique iOS-safe :
+  // body en position fixed, scroll restauré à la fermeture).
+  useEffect(() => {
+    if (!visible) return;
+    const y = window.scrollY;
+    const { style } = document.body;
+    const prev = {
+      position: style.position,
+      top: style.top,
+      left: style.left,
+      right: style.right,
+      width: style.width,
+      overflow: style.overflow,
+    };
+    style.position = "fixed";
+    style.top = `-${y}px`;
+    style.left = "0";
+    style.right = "0";
+    style.width = "100%";
+    style.overflow = "hidden";
+    return () => {
+      Object.assign(style, prev);
+      // Restauration INSTANTANÉE de la position : on neutralise le temps d'un
+      // tick le `scroll-behavior: smooth` posé sur <html>, sinon le retour à la
+      // position d'origine s'anime visiblement (effet « la page re-scrolle »).
+      const html = document.documentElement;
+      const prevBehavior = html.style.scrollBehavior;
+      html.style.scrollBehavior = "auto";
+      window.scrollTo(0, y);
+      html.style.scrollBehavior = prevBehavior;
+    };
+  }, [visible]);
+
+  // Épingle l'overlay au visual viewport : il suit le clavier mobile au lieu de
+  // laisser un liseré non flouté apparaître (bug iOS/Android backdrop-blur).
+  useEffect(() => {
+    if (!visible) return;
+    const vv = window.visualViewport;
+    const overlay = overlayRef.current;
+    if (!vv || !overlay) return;
+    const update = () => {
+      overlay.style.height = `${vv.height}px`;
+      overlay.style.top = `${vv.offsetTop}px`;
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+      overlay.style.height = "";
+      overlay.style.top = "";
+    };
+  }, [visible]);
 
   // Révélation : le pourcentage grimpe de 0 à sa valeur.
   useEffect(() => {
@@ -205,14 +294,9 @@ export function MysteryPopup() {
           transition={{ duration: 0.3, ease: EASE }}
           className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full border-[1.5px] border-ink bg-amber text-ink shadow-lift transition active:scale-95"
         >
-          {/* Secousse périodique pour attirer l'œil sans épuiser */}
-          <motion.span
-            animate={{ rotate: [0, -16, 14, -10, 8, -4, 0] }}
-            transition={{ duration: 0.7, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
-            className="flex"
-          >
+          <span className="flex">
             <Gift className="h-6 w-6" strokeWidth={2} aria-hidden />
-          </motion.span>
+          </span>
           <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-danger opacity-60" />
             <span className="relative inline-flex h-4 w-4 rounded-full border border-ink bg-danger" />
@@ -223,35 +307,40 @@ export function MysteryPopup() {
       {visible && (
         <motion.div
           key="overlay"
+          ref={overlayRef}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-ink/50 p-4 backdrop-blur-[2px] sm:items-center"
+          className="fixed inset-0 z-50 flex items-end justify-center overflow-hidden bg-ink/50 p-4 backdrop-blur-[2px] sm:items-center"
           onClick={dismiss}
         >
           <motion.div
             key="card"
+            ref={cardRef}
             role="dialog"
             aria-modal="true"
             aria-label="Réduction mystère"
+            tabIndex={-1}
             initial={{ y: 90, scale: 0.92, rotate: -2, opacity: 0 }}
             animate={{ y: 0, scale: 1, rotate: 0, opacity: 1 }}
             exit={{ y: 70, scale: 0.95, opacity: 0, transition: { duration: 0.22 } }}
-            transition={{ type: "spring", stiffness: 320, damping: 24 }}
-            className="relative w-full max-w-md overflow-hidden rounded-card border-[1.5px] border-ink bg-brand p-6 text-white shadow-lift"
+            transition={SPRING_SNAPPY}
+            className="relative w-full max-w-md overflow-hidden rounded-card border-[1.5px] border-ink bg-brand p-6 text-white shadow-lift focus:outline-none"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Halos lumineux animés (décor, pas d'icône) */}
-            <motion.span
+            {/* Halos lumineux (décor statique : aucune boucle → zéro jank mobile). */}
+            <span
               className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-amber/25 blur-3xl"
-              animate={{ scale: [1, 1.25, 1], opacity: [0.5, 0.9, 0.5] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
               aria-hidden
             />
-            <motion.span
+            <span
               className="pointer-events-none absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-magenta/25 blur-3xl"
-              animate={{ scale: [1.2, 1, 1.2], opacity: [0.4, 0.75, 0.4] }}
-              transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+              aria-hidden
+            />
+            {/* Cadeau filigrane : grand, blanc translucide, incrusté dans le fond. */}
+            <Gift
+              className="pointer-events-none absolute -bottom-12 -right-10 h-72 w-72 -rotate-12 text-white/10"
+              strokeWidth={1}
               aria-hidden
             />
 
@@ -259,11 +348,12 @@ export function MysteryPopup() {
               type="button"
               onClick={dismiss}
               aria-label="Fermer"
-              className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 active:scale-95"
+              className="absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 active:scale-95"
             >
               <X className="h-5 w-5" strokeWidth={2} />
             </button>
 
+            <div className="relative z-10">
             <AnimatePresence mode="wait" initial={false}>
               {step === "teaser" && (
                 <motion.div
@@ -296,7 +386,7 @@ export function MysteryPopup() {
                     className="mt-3 text-lg font-semibold text-white/90"
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.15, duration: 0.4, ease: EASE }}
+                    transition={{ delay: 0.5, duration: 0.4, ease: EASE }}
                   >
                     Ça t&apos;intéresse&nbsp;?
                   </motion.p>
@@ -304,29 +394,21 @@ export function MysteryPopup() {
                     className="mt-5 space-y-2"
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.35, duration: 0.4, ease: EASE }}
+                    transition={{ delay: 0.65, duration: 0.4, ease: EASE }}
                   >
                     <motion.button
                       type="button"
                       onClick={onInterested}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
-                      className="btn-amber relative w-full overflow-hidden"
+                      className="btn-amber w-full"
                     >
-                      {/* Reflet qui balaie le bouton */}
-                      <motion.span
-                        className="pointer-events-none absolute inset-y-0 w-16 -skew-x-12 bg-white/40"
-                        initial={{ left: "-25%" }}
-                        animate={{ left: "120%" }}
-                        transition={{ duration: 0.9, repeat: Infinity, repeatDelay: 2.2, ease: "easeInOut" }}
-                        aria-hidden
-                      />
                       Oui, montre-moi
                     </motion.button>
                     <button
                       type="button"
                       onClick={dismiss}
-                      className="w-full py-2 text-center text-sm font-semibold text-white/60 transition hover:text-white"
+                      className="flex min-h-11 w-full items-center justify-center text-center text-sm font-semibold text-white/60 transition hover:text-white"
                     >
                       Non merci
                     </button>
@@ -425,24 +507,52 @@ export function MysteryPopup() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 0.4, ease: EASE }}
                   >
-                    Pour toi, sur ton prochain atelier. Appliqué automatiquement quand
-                    tu réserves avec cet email.
+                    {isSignedIn
+                      ? "Pour toi, sur ton prochain atelier — déjà liée à ton compte. Elle s'applique toute seule au paiement."
+                      : "Pour la garder, connecte-toi avec cet email : ta remise s'activera automatiquement sur ton compte."}
                   </motion.p>
-                  <motion.button
-                    type="button"
-                    onClick={dismiss}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
+                  <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7, duration: 0.4, ease: EASE }}
-                    className="btn-amber mt-5 w-full"
+                    className="mt-5 space-y-2"
                   >
-                    C&apos;est noté !
-                  </motion.button>
+                    {isSignedIn ? (
+                      <motion.button
+                        type="button"
+                        onClick={dismiss}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="btn-amber w-full"
+                      >
+                        C&apos;est noté !
+                      </motion.button>
+                    ) : (
+                      <>
+                        <Link
+                          href="/sign-in"
+                          onClick={() => {
+                            track("mystery_login_clic", { pct });
+                            dismiss();
+                          }}
+                          className="btn-amber w-full"
+                        >
+                          Me connecter pour l&apos;activer
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={dismiss}
+                          className="flex min-h-11 w-full items-center justify-center text-center text-sm font-semibold text-white/60 transition hover:text-white"
+                        >
+                          Plus tard
+                        </button>
+                      </>
+                    )}
+                  </motion.div>
                 </motion.div>
               )}
             </AnimatePresence>
+            </div>
           </motion.div>
         </motion.div>
       )}

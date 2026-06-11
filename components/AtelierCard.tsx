@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, CalendarDays, Clock, MapPin, Hourglass } from "lucide-react";
 import type { Session } from "@/lib/types";
 import { placesRestantes, publicCibleLabel } from "@/lib/sessions.shared";
-import { formatEUR } from "@/lib/money";
+import { formatEUR, discountedCents } from "@/lib/money";
 import { CompleteSignal } from "./CompleteSignal";
 import {
   dayNumber,
@@ -16,8 +17,7 @@ import {
   formatHeure,
   capitalizeFirst,
 } from "@/lib/ui";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE, SPRING_SNAPPY } from "@/lib/motion";
 
 function Info({
   icon: Icon,
@@ -39,7 +39,15 @@ function Info({
   );
 }
 
-export function AtelierCard({ s, index = 0 }: { s: Session; index?: number }) {
+export function AtelierCard({
+  s,
+  index = 0,
+  pct = null,
+}: {
+  s: Session;
+  index?: number;
+  pct?: number | null;
+}) {
   const [open, setOpen] = useState(false);
   const stub = stubToneForIndex(index);
   const restantes = placesRestantes(s);
@@ -47,7 +55,12 @@ export function AtelierCard({ s, index = 0 }: { s: Session; index?: number }) {
   const heure = formatHeure(s.date_heure);
 
   return (
-    <div className="relative flex overflow-hidden rounded-card border-[1.5px] border-ink bg-surface shadow-soft">
+    <motion.div
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.99 }}
+      transition={SPRING_SNAPPY}
+      className="relative flex overflow-hidden rounded-card border-[1.5px] border-ink bg-surface shadow-soft"
+    >
       {/* Talon date — pleine hauteur */}
       <div className={`flex w-16 shrink-0 flex-col items-center justify-center ${stub}`}>
         <span className="font-display text-2xl font-black leading-none">
@@ -69,7 +82,18 @@ export function AtelierCard({ s, index = 0 }: { s: Session; index?: number }) {
           <div className={`min-w-0 flex-1 ${complet ? "opacity-50" : ""}`}>
             <h3 className="truncate font-display text-lg leading-tight">{s.titre}</h3>
             <p className="mt-1 text-sm">
-              <span className="font-bold">{formatEUR(s.prix_cents)}</span>
+              {pct ? (
+                <>
+                  <span className="font-semibold text-muted line-through tabular-nums">
+                    {formatEUR(s.prix_cents)}
+                  </span>{" "}
+                  <span className="font-bold text-success tabular-nums">
+                    {formatEUR(discountedCents(s.prix_cents, pct))}
+                  </span>
+                </>
+              ) : (
+                <span className="font-bold tabular-nums">{formatEUR(s.prix_cents)}</span>
+              )}
               {!complet && (
                 <span className="text-muted"> · {restantes} place{restantes > 1 ? "s" : ""}</span>
               )}
@@ -121,12 +145,22 @@ export function AtelierCard({ s, index = 0 }: { s: Session; index?: number }) {
                 )}
 
                 {complet ? (
-                  <Link href={`/ateliers/${s.id}`} className="btn-outline w-full">
-                    En savoir plus
+                  <Link
+                    href={`/ateliers/${s.id}`}
+                    transitionTypes={["nav-forward"]}
+                    onClick={() => track("atelier_clic", { id: s.id, source: "card" })}
+                    className="btn-outline w-full"
+                  >
+                    Voir l&apos;atelier
                   </Link>
                 ) : (
-                  <Link href={`/ateliers/${s.id}`} className="btn-primary w-full">
-                    Je suis intéressé
+                  <Link
+                    href={`/ateliers/${s.id}`}
+                    transitionTypes={["nav-forward"]}
+                    onClick={() => track("atelier_clic", { id: s.id, source: "card" })}
+                    className="btn-primary w-full"
+                  >
+                    Je réserve
                   </Link>
                 )}
               </div>
@@ -142,6 +176,6 @@ export function AtelierCard({ s, index = 0 }: { s: Session; index?: number }) {
       />
       <span className="perf-notch left-16 -top-2.5" aria-hidden />
       <span className="perf-notch left-16 -bottom-2.5" aria-hidden />
-    </div>
+    </motion.div>
   );
 }

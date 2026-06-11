@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { auth } from "@clerk/nextjs/server";
-import { getBooking, confirmBookingIfPaid } from "@/lib/bookings";
+import { getBooking } from "@/lib/bookings";
+import { finalizeIfPaid } from "@/lib/order";
 import { getSession } from "@/lib/sessions";
 import { qrDataUrl } from "@/lib/qr";
 import { ConfirmationReveal } from "@/components/ConfirmationReveal";
 import { TicketCarousel } from "@/components/TicketCarousel";
 import { SignInIncentive } from "@/components/SignInIncentive";
+import { TrackPurchase } from "@/components/TrackPurchase";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Réservation confirmée — Atelier aux 100 histoires" };
@@ -14,8 +16,9 @@ export const metadata = { title: "Réservation confirmée — Atelier aux 100 hi
 export default async function Merci({ searchParams }: { searchParams: Promise<{ b?: string }> }) {
   const { b } = await searchParams;
   const found = b ? await getBooking(b) : null;
-  // Filet de sécurité : confirme la réservation si le webhook n'est pas passé.
-  const booking = found ? await confirmBookingIfPaid(found) : null;
+  // Filet de sécurité : confirme + envoie l'email de confirmation si le webhook
+  // n'est pas (encore) passé. L'email ne part qu'une fois (cf. finalizeBooking).
+  const booking = found ? await finalizeIfPaid(found) : null;
   const session = booking ? await getSession(booking.session_id) : null;
 
   // Fallback gracieux (lien direct, booking introuvable…)
@@ -47,6 +50,14 @@ export default async function Merci({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <main className="screen py-8 pb-12">
+      {booking.statut === "confirmed" && (
+        <TrackPurchase
+          id={booking.id}
+          valueEur={booking.montant_cents / 100}
+          places={booking.nb_places}
+          sessionId={booking.session_id}
+        />
+      )}
       <ConfirmationReveal>
         <TicketCarousel b={booking} s={session} qrs={qrs} />
         <SignInIncentive signedIn={signedIn} email={booking.email} />

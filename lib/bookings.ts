@@ -1,6 +1,5 @@
 import "server-only";
 import { createAdminClient } from "./supabase/server";
-import { stripe } from "./stripe";
 import type { Booking, Session } from "./types";
 
 export type BookingWithSession = Booking & { session: Session | null };
@@ -119,23 +118,6 @@ export async function confirmBooking(stripeSessionId: string): Promise<Booking |
     .maybeSingle();
   if (error) throw error;
   return data as Booking | null;
-}
-
-/**
- * Filet de sécurité (webhook manqué/différé) : si la réservation est encore
- * `pending`, vérifie le paiement directement auprès de Stripe et la confirme si
- * c'est payé. Retourne le booking à jour. Idempotent et sans effet si déjà confirmé.
- */
-export async function confirmBookingIfPaid(booking: Booking): Promise<Booking> {
-  if (booking.statut !== "pending" || !booking.stripe_session_id) return booking;
-  try {
-    const cs = await stripe.checkout.sessions.retrieve(booking.stripe_session_id);
-    if (cs.payment_status !== "paid") return booking;
-  } catch {
-    return booking; // Stripe indisponible → on laisse le webhook faire le travail
-  }
-  const confirmed = await confirmBooking(booking.stripe_session_id);
-  return confirmed ?? { ...booking, statut: "confirmed" };
 }
 
 export async function cancelBooking(stripeSessionId: string): Promise<Booking | null> {

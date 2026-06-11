@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { getSession } from "@/lib/sessions";
 import {
   reserveSeats,
@@ -29,12 +29,21 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { userId } = await auth();
+    const user = await currentUser();
+    const userId = user?.id ?? null;
 
-    // Remise mystère éventuelle (la réservation prime : toute erreur → sans remise)
+    // Remise mystère : UNIQUEMENT pour un compte connecté, sur son email vérifié
+    // (anti-abus). L'email saisi dans le formulaire ne donne jamais droit à une
+    // remise — sinon il suffirait de taper l'email d'un autre lead.
+    const verifiedEmail =
+      user?.primaryEmailAddress?.emailAddress ??
+      user?.emailAddresses?.[0]?.emailAddress ??
+      null;
     let discounts: { coupon: string }[] | undefined;
     let pct = 0;
-    const found = await findActiveDiscount(email).catch(() => null);
+    const found = verifiedEmail
+      ? await findActiveDiscount(verifiedEmail).catch(() => null)
+      : null;
     if (found) {
       try {
         discounts = [{ coupon: await ensureMysteryCoupon(found) }];
@@ -54,7 +63,13 @@ export async function POST(req: Request) {
       clerk_user_id: userId ?? null,
     });
 
-    const base = process.env.NEXT_PUBLIC_APP_URL!;
+    // URL de retour Stripe : on privilégie l'origine RÉELLE de la requête, pour
+    // fonctionner partout sans config (localhost, accès LAN depuis un téléphone,
+    // preview, prod). Repli sur la variable d'env., puis sur l'URL de la requête.
+    const base =
+      req.headers.get("origin") ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      new URL(req.url).origin;
     const checkout = await stripe.checkout.sessions.create({
       mode: "payment",
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 min
@@ -74,7 +89,7 @@ export async function POST(req: Request) {
         booking_id: booking.id,
         session_id: sessionId,
         nb_places: String(qty),
-        mystery_email: pct ? email : "",
+        mystery_email: pct ? verifiedEmail! : "",
         mystery_pct: String(pct),
       },
       success_url: `${base}/merci?b=${booking.id}`,

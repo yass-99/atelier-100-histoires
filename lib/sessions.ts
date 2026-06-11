@@ -15,6 +15,17 @@ export async function listPublishedSessions(): Promise<Session[]> {
   return data as Session[];
 }
 
+/** Toutes les sessions (tous statuts) — usage admin uniquement. */
+export async function listAllSessions(): Promise<Session[]> {
+  const db = createAdminClient();
+  const { data, error } = await db
+    .from("sessions")
+    .select("*")
+    .order("date_heure", { ascending: true });
+  if (error) throw error;
+  return data as Session[];
+}
+
 export async function getSession(id: string): Promise<Session | null> {
   const db = createAdminClient();
   const { data, error } = await db

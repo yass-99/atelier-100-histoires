@@ -5,7 +5,8 @@ import type { Session } from "./types";
 const mk = (id: string, iso: string): Session => ({
   id, titre: id, description: "", date_heure: iso, duree: 60, lieu: "Paris",
   capacite: 10, prix_cents: 3500, statut: "publie", places_reservees: 0,
-  image_url: null, created_at: iso,
+  image_url: null, image_urls: null, a_la_une: false, created_at: iso,
+  public_cible: "tous", age_minimum: null, conso_incluse: false, conso_detail: null,
 });
 
 describe("dates", () => {

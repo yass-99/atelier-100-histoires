@@ -1,11 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/nextjs";
 import { Loader2, ArrowLeft, ArrowRight } from "lucide-react";
 
 type ClerkErr = { message?: string; longMessage?: string } | null | undefined;
 const msg = (e: ClerkErr, fallback: string) => e?.longMessage ?? e?.message ?? fallback;
+
+const RESEND_COOLDOWN = 30; // secondes
 
 export function SignInForm() {
   const { signIn, fetchStatus } = useSignIn();
@@ -14,7 +16,15 @@ export function SignInForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
   const isLoaded = fetchStatus !== undefined;
+
+  // Décompte du cooldown de renvoi.
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
   async function onSendCode(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,6 +46,7 @@ export function SignInForm() {
     }
     setEmail(mail);
     setStep("code");
+    setCooldown(RESEND_COOLDOWN);
     setLoading(false);
   }
 
@@ -66,15 +77,16 @@ export function SignInForm() {
   }
 
   async function resend() {
-    if (!signIn) return;
+    if (!signIn || cooldown > 0) return;
     setError(null);
+    setCooldown(RESEND_COOLDOWN); // garde-fou anti-spam immédiat
     const { error } = await signIn.emailCode.sendCode();
     if (error) setError(msg(error, "Impossible de renvoyer le code."));
   }
 
   if (step === "code") {
     return (
-      <form onSubmit={onVerify} className="card space-y-4">
+      <form key="code-step" onSubmit={onVerify} className="card flex flex-col gap-4">
         <p className="text-sm text-muted">
           Code envoyé à <span className="font-bold text-foreground">{email}</span>.
         </p>
@@ -102,14 +114,16 @@ export function SignInForm() {
           <button type="button" onClick={() => { setStep("email"); setError(null); }} className="inline-flex items-center gap-1 font-bold text-muted hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> Changer d&apos;email
           </button>
-          <button type="button" onClick={resend} className="font-bold text-brand-ink">Renvoyer le code</button>
+          <button type="button" onClick={resend} disabled={cooldown > 0} className="font-bold text-brand-ink disabled:text-muted disabled:no-underline">
+            {cooldown > 0 ? `Renvoyer dans ${cooldown}s` : "Renvoyer le code"}
+          </button>
         </div>
       </form>
     );
   }
 
   return (
-    <form onSubmit={onSendCode} className="card space-y-4">
+    <form key="email-step" onSubmit={onSendCode} className="card flex flex-col gap-4">
       <div>
         <label className="field-label" htmlFor="email">Email</label>
         <input id="email" name="email" type="email" required autoComplete="email" placeholder="ton@email.fr" className="field" autoFocus />

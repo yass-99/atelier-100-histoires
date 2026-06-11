@@ -48,6 +48,9 @@
   --shadow-card: 0 14px 36px -22px rgba(10, 10, 11, 0.24);
   --shadow-pop: 0 14px 30px -16px rgba(10, 10, 11, 0.30);
   --shadow-lift: 0 12px 28px -16px rgba(10, 10, 11, 0.28);
+  /* Incrustation : liseré clair en haut + creux sombre en bas (effet gravé,
+     sans aucune ombre portée — la carte « s'enfonce » dans la page). */
+  --shadow-emboss: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.20), inset 0 -2.5px 0 0 rgba(0, 0, 0, 0.22);
 }
 
 /* next/font expose les familles via des variables runtime. */
@@ -69,6 +72,11 @@ h1, h2, h3, h4 {
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.1;
+}
+
+/* Défilement doux pour les ancres (#ateliers…), sauf préférence réduite. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
 }
 
 /* ---- Classes de composants réutilisables ---- */
@@ -123,10 +131,23 @@ h1, h2, h3, h4 {
     @apply text-xs font-bold uppercase tracking-[0.12em];
   }
 
+  /* Surligneur « marqueur » : aplat de couleur derrière un mot-clé. box-decoration
+     clone → le fond suit le texte proprement sur plusieurs lignes (aucun dégradé). */
+  .mark {
+    @apply box-decoration-clone rounded-[0.35em] px-[0.32em] py-[0.06em] font-extrabold;
+  }
+
   /* Badge date carré (jour + mois) */
   .date-badge {
     @apply flex h-12 w-12 shrink-0 flex-col items-center justify-center
            rounded-2xl bg-ink text-on-ink leading-none;
+  }
+
+  /* Tampon « encreur » (ex. COMPLET) — cachet rouge incliné, semi-transparent */
+  .stamp {
+    @apply pointer-events-none select-none -rotate-12 rounded-md border-[2.5px] border-danger
+           px-2.5 py-0.5 font-display text-sm font-black uppercase tracking-[0.18em]
+           text-danger opacity-80;
   }
 
   /* Pastilles / étiquettes */
@@ -151,9 +172,6 @@ h1, h2, h3, h4 {
   /* Petite ligne d'info avec icône */
   .meta-row { @apply flex items-center gap-2 text-sm font-medium; }
 
-  /* Décor flou (déprécié — ne plus utiliser) */
-  .blob { @apply pointer-events-none absolute rounded-full blur-2xl; }
-
   /* Feuille blanche arrondie qui remonte */
   .sheet { @apply relative -mt-8 rounded-t-[2rem] bg-surface px-4 pt-6; }
 
@@ -165,14 +183,15 @@ h1, h2, h3, h4 {
            hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink;
   }
 
-  /* Pastille de jour — épurée (sans bordure) : ghost inactif, noir actif */
+  /* Pastille de jour — épurée : ghost inactif, ambre actif (l'aplat actif est
+     rendu par un indicateur Framer `layoutId`, cf. DayStrip). */
   .day-pill {
-    @apply flex shrink-0 flex-col items-center justify-center gap-1
+    @apply relative flex shrink-0 flex-col items-center justify-center gap-1
            rounded-2xl px-4 py-2.5 text-center leading-none text-muted
            transition active:scale-95
            hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink;
   }
-  .day-pill[data-active="true"] { @apply bg-amber text-ink; }
+  .day-pill[data-active="true"] { @apply text-ink hover:text-ink; }
 
   /* E-ticket — aplat uni (aucun dégradé) */
   .ticket {
@@ -202,15 +221,77 @@ h1, h2, h3, h4 {
            border-[1.5px] border-ink bg-background;
   }
 
-  /* FAQ : <details> en carte contournée */
+  /* FAQ : carte contournée (l'ouverture/chevron sont animés par Framer, cf. Faq.tsx) */
   .faq-item {
     @apply overflow-hidden rounded-card border-[1.5px] border-ink bg-surface shadow-soft;
   }
-  .faq-item > summary {
-    @apply flex cursor-pointer list-none items-center justify-between gap-3
-           px-5 py-4 font-display text-base font-extrabold select-none;
+
+  /* Skeleton : bloc neutre porteur du halo « shimmer » (forme/rayon via Tailwind). */
+  .skeleton { @apply relative overflow-hidden bg-border; }
+}
+
+/* ============================================================
+   Mouvement — skeletons, transitions de page, accessibilité
+   (tokens Framer : lib/motion.ts · doc : design-system/MASTER.md)
+   ============================================================ */
+
+/* Halo « shimmer » qui balaie les skeletons. */
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* Transitions de page directionnelles (View Transitions API). */
+::view-transition-old(.nav-forward) {
+  --slide-offset: -56px;
+  animation: 150ms ease-in both vt-fade reverse, 380ms ease-in-out both vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 56px;
+  animation: 220ms ease-out 130ms both vt-fade, 380ms ease-in-out both vt-slide;
+}
+::view-transition-old(.nav-back) {
+  --slide-offset: 56px;
+  animation: 150ms ease-in both vt-fade reverse, 380ms ease-in-out both vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -56px;
+  animation: 220ms ease-out 130ms both vt-fade, 380ms ease-in-out both vt-slide;
+}
+@keyframes vt-slide { from { translate: var(--slide-offset); } to { translate: 0; } }
+@keyframes vt-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Morph photo carte « À la une » → fiche : flou bref qui masque l'interpolation. */
+::view-transition-group(.morph) { animation-duration: 360ms; }
+::view-transition-image-pair(.morph) { animation-name: vt-morph-blur; }
+@keyframes vt-morph-blur { 30% { filter: blur(3px); } }
+
+/* Header ancré : repère fixe, il ne glisse pas pendant la transition. */
+::view-transition-group(site-header) { animation: none; z-index: 100; }
+::view-transition-old(site-header) { display: none; }
+::view-transition-new(site-header) { animation: none; }
+
+/* « Réduire les animations » : coupe les boucles CSS et fige les transitions de
+   page. Les animations Framer sont déjà gérées par MotionConfig reducedMotion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin,
+  .animate-ping,
+  .animate-pulse,
+  .animate-bounce {
+    animation: none !important;
   }
-  .faq-item > summary::-webkit-details-marker { display: none; }
-  .faq-chevron { @apply h-5 w-5 shrink-0 text-muted transition-transform; }
-  .faq-item[open] .faq-chevron { @apply rotate-180; }
+  .skeleton::after { animation: none; }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
 }

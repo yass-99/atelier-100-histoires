@@ -2,8 +2,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
+import { EASE, SPRING_SOFT, SPRING_SNAPPY } from "@/lib/motion";
 
 /**
  * Séquence de confirmation : pastille de validation (icône + texte) qui apparaît,
@@ -31,12 +30,12 @@ export function ConfirmationReveal({ children }: { children: ReactNode }) {
             className="flex h-20 w-20 items-center justify-center rounded-full bg-success text-white shadow-lift"
             initial={{ scale: 0, rotate: -25 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.1 }}
+            transition={{ ...SPRING_SOFT, delay: 0.1 }}
           >
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 420, damping: 16, delay: 0.34 }}
+              transition={{ ...SPRING_SNAPPY, delay: 0.34 }}
             >
               <Check className="h-10 w-10" strokeWidth={3} aria-hidden />
             </motion.span>
